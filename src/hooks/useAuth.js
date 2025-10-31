@@ -56,6 +56,9 @@ export const useAuth = ({middleware, url}) => {
         if(middleware === 'guest' && url && user) {
             navigate(url)
         }
+        if(middleware === 'guest' && user && user.role === 'admin') {
+            navigate('/admin')
+        }
         if(middleware === 'auth' && error) {
             navigate('/auth/login')
         }

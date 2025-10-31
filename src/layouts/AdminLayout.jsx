@@ -3,17 +3,18 @@ import { Outlet } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import HeaderAuth from '../components/header/HeaderAuth.jsx'
 
-export default function Layout() {
+export default function AdminLayout() {
+    const {user, error} = useAuth({middleware: 'auth'})
 
-  const {user, error} = useAuth({middleware: 'auth'})
-
-  console.log(user)
-  console.log(error)
+    console.log(user)
+    console.log(error)
 
   return (
     <div>
         <HeaderAuth />
-          <p>Bienvenido psicologo</p>
+
+        <p>Bienvenido admin</p>
+        
         <Outlet/>
     </div>
   )

@@ -89,7 +89,7 @@ export default function Login() {
         <p className="text-center text-sm text-gray-600">
           ¿No tienes una cuenta?{" "}
           <Link
-            to="auth/register"
+            to="/auth/register"
             className="text-cyan-500 font-medium hover:underline"
           >
             Regístrate
