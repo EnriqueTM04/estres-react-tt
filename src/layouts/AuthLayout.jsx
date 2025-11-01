@@ -10,7 +10,7 @@ export default function AuthLayout() {
             <img 
                 src="../img/login_register.svg" 
                 alt="imagen login" 
-                className="max-w-xs"
+                className="w-2/3 md:w-1/2 lg:w-10/12"
             />
 
             <div className='p-0 w-full'>

@@ -13,7 +13,7 @@ export default function Layout() {
   return (
     <div>
         <HeaderAuth />
-          <p>Bienvenido psicologo</p>
+        
         <Outlet/>
     </div>
   )

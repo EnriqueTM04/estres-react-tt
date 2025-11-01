@@ -7,9 +7,9 @@ export default function HeaderAuth() {
   const { logout } = useAuth({ middleware: "auth" });
 
   return (
-    <header className="w-full flex justify-between items-center px-8 py-4 border-b bg-white shadow-sm">
+    <header className="w-full flex justify-between items-center px-8 py-4 border-b-blue-400 bg-white shadow-sm">
       {/* Logo e identidad */}
-      <Link to="/dashboard" className="flex items-center gap-2">
+      <Link to="/" className="flex items-center gap-2">
         <img
             src={logo}
             alt="Logo VidaZen"
@@ -21,7 +21,7 @@ export default function HeaderAuth() {
       {/* Navegación y botón */}
       <div className="flex items-center gap-6">
         <Link
-          to="/dashboard"
+          to="/"
           className="text-sm text-gray-700 hover:text-cyan-500 font-medium"
         >
           Inicio

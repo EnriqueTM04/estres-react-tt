@@ -13,8 +13,10 @@ export default function AdminLayout() {
     <div>
         <HeaderAuth />
 
-        <p>Bienvenido admin</p>
-        
+        <div className="max-w-4xl mx-auto mt-8 px-4">
+          <h1 className="text-3xl font-bold text-gray-800 mb-6 tracking-tight">Administracion de usuarios</h1>
+        </div>
+
         <Outlet/>
     </div>
   )
