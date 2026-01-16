@@ -49,19 +49,20 @@ export const useAuth = ({middleware, url}) => {
         }
     }
 
-    console.log(user)
+    console.log(middleware)
     console.log(error)
 
     useEffect(() => {
-        if(middleware === 'guest' && url && user) {
-            navigate(url)
+        if(middleware === 'auth' && error) {
+            navigate('/auth/login')
         }
         if(middleware === 'guest' && user && user.role === 'admin') {
             navigate('/admin')
         }
-        if(middleware === 'auth' && error) {
-            navigate('/auth/login')
+        if(middleware === 'guest' && user && user.role === 'psicologo') {
+            navigate('/psicologo/pacientes')
         }
+        
     }, [user, error]);
 
     return {

@@ -6,12 +6,7 @@ export default function AuthLayout() {
   return (
     <div>
         <HeaderInvitado />
-        <main className="max-w-5xl mx-auto mt-10 md:mt-20 flex flex-col md:flex-row items-center justify-center gap-20 p-5">
-            <img 
-                src="../img/login_register.svg" 
-                alt="imagen login" 
-                className="w-2/3 md:w-1/2 lg:w-1/3"
-            />
+        <main className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-20 p-5">
 
             <div className='p-0 w-full'>
                 <Outlet/>
