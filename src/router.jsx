@@ -12,11 +12,10 @@ import Citas from './views/psicologo/Citas.jsx'
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Layout/>,
+        element: <Landing/>,
         children: [
             {
                 index: true,
-                element: <Landing />
             }
         ]
     },

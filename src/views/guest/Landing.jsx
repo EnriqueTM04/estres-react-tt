@@ -6,8 +6,12 @@ import {
   FileText, 
   ArrowRight 
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function Landing() {
+
+  useAuth({middleware: 'guest'});
   
   // Datos para las tarjetas de herramientas
   const features = [
@@ -65,12 +69,12 @@ export default function Landing() {
                 </div>
                 
                 <div className="flex flex-wrap gap-3 justify-center mt-4">
-                  <button className="flex items-center justify-center rounded-xl h-10 px-6 bg-[#19e6e6] hover:bg-[#15cfcf] text-[#0e1b1b] text-sm font-bold transition-transform active:scale-95 md:h-12 md:text-base">
+                  <Link to="/auth/register" className="flex items-center justify-center rounded-xl h-10 px-6 bg-[#19e6e6] hover:bg-[#15cfcf] text-[#0e1b1b] text-sm font-bold transition-transform active:scale-95 md:h-12 md:text-base">
                     Registrarse
-                  </button>
-                  <button className="flex items-center justify-center rounded-xl h-10 px-6 bg-[#e7f3f3] hover:bg-[#d5eaea] text-[#0e1b1b] text-sm font-bold transition-transform active:scale-95 md:h-12 md:text-base">
+                  </Link>
+                  <Link to="/auth/login" className="flex items-center justify-center rounded-xl h-10 px-6 bg-[#e7f3f3] hover:bg-[#d5eaea] text-[#0e1b1b] text-sm font-bold transition-transform active:scale-95 md:h-12 md:text-base">
                     Iniciar Sesión
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
