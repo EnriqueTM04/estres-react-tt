@@ -12,23 +12,18 @@ import Citas from './views/psicologo/Citas.jsx'
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Landing/>,
-        children: [
-            {
-                index: true,
-            }
-        ]
+        element: <Landing />
     },
     {
         path: "/auth",
         element: <AuthLayout/>,
         children: [
             {
-                path: '/auth/login',
+                path: 'login',
                 element: <Login />
             },
             {
-                path: '/auth/register',
+                path: 'register',
                 element: <Registro />
             }
         ]
@@ -42,11 +37,11 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
             {
-                path: '/psicologo/pacientes',
+                path: 'pacientes',
                 element: <Pacientes />
             },
             {
-                path: '/psicologo/citas',
+                path: 'citas',
                 element: <Citas />
             }
         ]

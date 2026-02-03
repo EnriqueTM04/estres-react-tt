@@ -14,20 +14,63 @@ import {
   TrendingUp,
   Flower
 } from 'lucide-react';
-
-// --- DATOS DE EJEMPLO (Para limpiar el JSX) ---
-const patientsData = [
-  { id: 1, name: "Alice Freeman", code: "1", status: "Activo", stress: 25, stressLabel: "Bajo", date: "24 Oct, 2023", img: "2" },
-  { id: 2, name: "Marcus Johnson", code: "5", status: "Activo", stress: 58, stressLabel: "Moderado", date: "25 Oct, 2023", img: "3" },
-  { id: 3, name: "Elena Rodriguez", code: "7", status: "Monitoreo", stress: 82, stressLabel: "Alto", date: "Inmediata", isUrgent: true, img: "4" },
-  { id: 4, name: "David Chen", code: "8", status: "Activo", stress: 35, stressLabel: "Estable", date: "28 Oct, 2023", img: "5" },
-  { id: 5, name: "Sophie Turner", code: "9", status: "Pausado", stress: 0, stressLabel: "Desconocido", date: "Sin sesiones", img: "6" },
-];
+import useSWR from 'swr';
+import clienteAxios from '../../config/axios';
 
 // ----------------------------------------------------------------------
 // 2. COMPONENTE MAIN (Contenido Restante)
 // ----------------------------------------------------------------------
 export default function Pacientes() {
+
+  const token = localStorage.getItem('AUTH_TOKEN');
+
+  const fetcher = () =>
+  clienteAxios.get('/api/sesiones', {
+    params: {
+      role: 'psicologo',
+      consulta: 'ultimos'
+    },
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }).then(res => res.data);
+
+  const {
+    data: sesionesData, error: sesionesError, isLoading: sesionesLoading
+  } = useSWR('/api/sesiones', fetcher);
+
+  const fetcher2 = () =>
+  clienteAxios.get('/api/pacientes', {
+    params: {
+      role: 'psicologo'
+    },
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }).then(res => res.data);
+
+  const {data, error, isLoading} = useSWR('/api/pacientes', fetcher2);
+
+  if(isLoading) {
+    return <div>Cargando...</div>
+  }
+
+  let estresAlto = 0;
+
+  data?.data.forEach(paciente => {
+    paciente.porcentaje = (paciente.nivel_estres_actual / 56) * 100;
+    if(paciente.nivel_estres_actual < 20) {
+      paciente.estres = 'Bajo';
+    }
+    if(paciente.nivel_estres_actual >= 20 && paciente.nivel_estres_actual <= 25) {
+      paciente.estres = 'Moderado'
+    }
+    if(paciente.nivel_estres_actual > 25) {
+      paciente.estres = 'Elevado'
+      estresAlto++;
+    }
+  });
+
   return (
     <main className="flex-1 md:ml-64 p-6 lg:p-10 transition-all duration-300 font-['Nunito_Sans']">
       
@@ -61,7 +104,7 @@ export default function Pacientes() {
           </div>
           <div>
             <p className="text-sm text-[#5D6D7E] dark:text-[#BDC3C7] font-medium">Total de Pacientes</p>
-            <h3 className="text-2xl font-bold text-[#2C3E50] dark:text-white">48</h3>
+            <h3 className="text-2xl font-bold text-[#2C3E50] dark:text-white">{data?.data.length}</h3>
           </div>
         </div>
 
@@ -81,7 +124,7 @@ export default function Pacientes() {
           </div>
           <div>
             <p className="text-sm text-[#5D6D7E] dark:text-[#BDC3C7] font-medium">Alertas de Estrés Alto</p>
-            <h3 className="text-2xl font-bold text-[#2C3E50] dark:text-white">3</h3>
+            <h3 className="text-2xl font-bold text-[#2C3E50] dark:text-white">{estresAlto}</h3>
           </div>
         </div>
       </div>
@@ -117,57 +160,57 @@ export default function Pacientes() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {patientsData.map((patient) => (
-                <tr key={patient.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer">
+              {data?.data.map((paciente) => (
+                <tr key={paciente.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer">
                   <td className="p-5">
                     <div className="flex items-center gap-4">
                       <img 
                         alt="User avatar" 
                         className="w-10 h-10 rounded-full object-cover" 
-                        src={`https://images.unsplash.com/photo-${patient.img === "2" ? "1438761681033-6461ffad8d80" : patient.img === "3" ? "1500648767791-00dcc994a43e" : "1544005313-94ddf0286df2"}?auto=format&fit=crop&q=80&w=100&h=100`} 
+                        src={`https://images.unsplash.com/photo-${paciente.img === "2" ? "1438761681033-6461ffad8d80" : paciente.img === "3" ? "1500648767791-00dcc994a43e" : "1544005313-94ddf0286df2"}?auto=format&fit=crop&q=80&w=100&h=100`} 
                       />
                       <div>
-                        <h4 className="font-semibold text-[#2C3E50] dark:text-white group-hover:text-[#85C1E9] transition-colors">{patient.name}</h4>
-                        <p className="text-xs text-[#5D6D7E] dark:text-[#BDC3C7]">Semestre: {patient.code}</p>
+                        <h4 className="font-semibold text-[#2C3E50] dark:text-white group-hover:text-[#85C1E9] transition-colors">{paciente.user.name}</h4>
+                        <p className="text-xs text-[#5D6D7E] dark:text-[#BDC3C7]">Semestre: {paciente.semestre}</p>
                       </div>
                     </div>
                   </td>
                   <td className="p-5">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                      ${patient.status === 'Activo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 
-                        patient.status === 'Monitoreo' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                      ${paciente.status === 'Activo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 
+                        paciente.status === 'Monitoreo' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
                         'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}`}>
-                      {patient.status}
+                      {paciente.status}
                     </span>
                   </td>
                   <td className="p-5">
                     <div className="flex flex-col gap-1 w-32">
                       <div className="flex justify-between text-xs">
-                        <span className="text-[#5D6D7E] dark:text-[#BDC3C7]">{patient.stressLabel}</span>
+                        <span className="text-[#5D6D7E] dark:text-[#BDC3C7]">{paciente.estres}</span>
                         <span className={`font-bold ${
-                          patient.stress > 80 ? 'text-red-500' : 
-                          patient.stress > 50 ? 'text-[#85C1E9]' : 
-                          patient.stress === 0 ? 'text-gray-400' : 'text-[#A2D9CE]'
+                          paciente.nivel_estres_actual > 25 ? 'text-red-500' : 
+                          paciente.nivel_estres_actual > 19 ? 'text-[#85C1E9]' : 
+                          paciente.nivel_estres_actual === 0 ? 'text-gray-400' : 'text-[#A2D9CE]'
                         }`}>
-                          {patient.stress > 0 ? `${patient.stress}%` : '--'}
+                          {paciente.nivel_estres_actual > 0 ? `${paciente.nivel_estres_actual}%` : '--'}
                         </span>
                       </div>
                       <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-600 rounded-full overflow-hidden">
                         <div 
                           className={`h-full rounded-full ${
-                            patient.stress > 80 ? 'bg-red-500' : 
-                            patient.stress > 50 ? 'bg-[#85C1E9]' : 
-                            patient.stress === 0 ? 'bg-transparent' : 'bg-[#A2D9CE]'
+                            paciente.nivel_estres_actual > 25 ? 'bg-red-500' : 
+                            paciente.nivel_estres_actual > 19 ? 'bg-[#85C1E9]' : 
+                            paciente.nivel_estres_actual === 0 ? 'bg-transparent' : 'bg-[#A2D9CE]'
                           }`} 
-                          style={{ width: `${patient.stress}%` }}
+                          style={{ width: `${paciente.porcentaje}%` }}
                         ></div>
                       </div>
                     </div>
                   </td>
                   <td className="p-5">
-                    <div className={`flex items-center gap-2 text-sm ${patient.isUrgent ? 'text-red-600 dark:text-red-400 font-medium' : 'text-[#5D6D7E] dark:text-[#BDC3C7]'}`}>
-                      {patient.isUrgent ? <AlertTriangle className="w-4 h-4"/> : <CalendarDays className="w-4 h-4"/>}
-                      {patient.date}
+                    <div className={`flex items-center gap-2 text-sm ${paciente.isUrgent ? 'text-red-600 dark:text-red-400 font-medium' : 'text-[#5D6D7E] dark:text-[#BDC3C7]'}`}>
+                      {paciente.isUrgent ? <AlertTriangle className="w-4 h-4"/> : <CalendarDays className="w-4 h-4"/>}
+                      {paciente.date}
                     </div>
                   </td>
                   <td className="p-5 text-right">
@@ -182,13 +225,13 @@ export default function Pacientes() {
         </div>
         
         {/* Pagination */}
-        <div className="flex items-center justify-between p-5 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-[#2C3E50]">
+        {/* <div className="flex items-center justify-between p-5 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-[#2C3E50]">
           <span className="text-sm text-[#5D6D7E] dark:text-[#BDC3C7]">Mostrando <span className="font-semibold text-[#2C3E50] dark:text-white">1-5</span> de <span className="font-semibold text-[#2C3E50] dark:text-white">48</span> pacientes</span>
           <div className="flex gap-2">
             <button className="px-3 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded text-[#5D6D7E] dark:text-[#BDC3C7] hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50">Anterior</button>
             <button className="px-3 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded text-[#5D6D7E] dark:text-[#BDC3C7] hover:bg-gray-50 dark:hover:bg-white/5">Siguiente</button>
           </div>
-        </div>
+        </div> */}
       </div>
     </main>
   );

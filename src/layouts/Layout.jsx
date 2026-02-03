@@ -1,7 +1,6 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import HeaderInvitado from '../components/header/HeaderInvitado.jsx'
 import Sidebar from '../components/sidebar/Sidebar.jsx'
 
 export default function Layout() {

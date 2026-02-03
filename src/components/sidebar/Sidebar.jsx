@@ -16,8 +16,8 @@ import { useAuth } from '../../hooks/useAuth';
 export default function Sidebar() {
   // Estado para controlar la visibilidad del botón de cerrar sesión
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const navigate = useNavigate();
-  const { logout } = useAuth({ middleware: "auth" });
+  useNavigate();
+  const { user, logout } = useAuth({ middleware: "auth" });
 
   return (
     <aside className="w-64 bg-[#2C3E50] dark:bg-black/20 flex-shrink-0 hidden md:flex flex-col fixed h-full z-10 transition-all duration-300">
@@ -96,7 +96,7 @@ export default function Sidebar() {
               src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100" 
             />
             <div className="flex flex-col text-left">
-              <span className="text-sm font-semibold text-white">Dra. Sarah M.</span>
+              <span className="text-sm font-semibold text-white">{user?.name}</span>
               <span className="text-xs text-white/50">Psicóloga</span>
             </div>
             {/* Flechita indicadora */}
