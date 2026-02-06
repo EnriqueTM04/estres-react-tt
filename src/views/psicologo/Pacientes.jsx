@@ -25,31 +25,17 @@ export default function Pacientes() {
   const token = localStorage.getItem('AUTH_TOKEN');
 
   const fetcher = () =>
-  clienteAxios.get('/api/sesiones', {
-    params: {
-      role: 'psicologo',
-      consulta: 'ultimos'
-    },
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }).then(res => res.data);
-
-  const {
-    data: sesionesData, error: sesionesError, isLoading: sesionesLoading
-  } = useSWR('/api/sesiones', fetcher);
-
-  const fetcher2 = () =>
   clienteAxios.get('/api/pacientes', {
     params: {
-      role: 'psicologo'
+      role: 'psicologo',
+      consulta: 'ultimos',
     },
     headers: {
       Authorization: `Bearer ${token}`
     }
   }).then(res => res.data);
 
-  const {data, error, isLoading} = useSWR('/api/pacientes', fetcher2);
+  const {data, error, isLoading} = useSWR('/api/pacientes', fetcher);
 
   if(isLoading) {
     return <div>Cargando...</div>
@@ -114,7 +100,7 @@ export default function Pacientes() {
           </div>
           <div>
             <p className="text-sm text-[#5D6D7E] dark:text-[#BDC3C7] font-medium">Próximas Sesiones</p>
-            <h3 className="text-2xl font-bold text-[#2C3E50] dark:text-white">12</h3>
+            <h3 className="text-2xl font-bold text-[#2C3E50] dark:text-white">{data?.sesiones_proximas}</h3>
           </div>
         </div>
 
@@ -153,7 +139,7 @@ export default function Pacientes() {
             <thead>
               <tr className="bg-gray-50 dark:bg-black/20 border-b border-gray-100 dark:border-gray-700">
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Paciente</th>
-                <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Estado</th>
+                <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Progreso</th>
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Nivel de Estrés</th>
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Última Sesión</th>
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7] text-right">Acciones</th>
@@ -176,12 +162,20 @@ export default function Pacientes() {
                     </div>
                   </td>
                   <td className="p-5">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                      ${paciente.status === 'Activo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 
-                        paciente.status === 'Monitoreo' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
-                        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}`}>
-                      {paciente.status}
-                    </span>
+                    <div className="flex flex-col gap-1 w-32">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-[#5D6D7E] dark:text-[#BDC3C7]">Avance</span>
+                        <span className={`font-bold 'text-[#85C1E9]' `}>
+                          {paciente.progreso_actividad.progreso_porcentaje > 0 ? `${paciente.progreso_actividad.progreso_porcentaje}%` : '--'}
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-600 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full bg-[#85C1E9]`} 
+                          style={{ width: `${paciente.progreso_actividad.progreso_porcentaje}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </td>
                   <td className="p-5">
                     <div className="flex flex-col gap-1 w-32">
@@ -210,7 +204,7 @@ export default function Pacientes() {
                   <td className="p-5">
                     <div className={`flex items-center gap-2 text-sm ${paciente.isUrgent ? 'text-red-600 dark:text-red-400 font-medium' : 'text-[#5D6D7E] dark:text-[#BDC3C7]'}`}>
                       {paciente.isUrgent ? <AlertTriangle className="w-4 h-4"/> : <CalendarDays className="w-4 h-4"/>}
-                      {paciente.date}
+                      {paciente.ultima_sesion.fecha ? new Date(paciente.ultima_sesion.fecha).toLocaleDateString() : 'Sin sesiones'}
                     </div>
                   </td>
                   <td className="p-5 text-right">

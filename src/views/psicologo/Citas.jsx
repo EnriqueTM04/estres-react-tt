@@ -1,4 +1,15 @@
 import React from 'react';
+import usevidaZen from '../../hooks/useVidaZen';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
+import weekday from 'dayjs/plugin/weekday';
+import EditarCitaModal from './EditarCitaModal';
+import 'dayjs/locale/es';
+
+dayjs.extend(isoWeek);
+dayjs.extend(weekday);
+dayjs.locale('es');
+
 import { 
   Search, 
   Plus, 
@@ -15,6 +26,30 @@ import {
 } from 'lucide-react';
 
 export default function Citas() {
+  const {
+    currentWeek,
+    setCurrentWeek,
+    citas,
+    getCita,
+    daysOfWeek,
+    setIsEditModalOpen,
+    setSelectedCita,
+    isEditModalOpen,
+    selectedCita
+  } = usevidaZen();
+    console.log('Citas en Citas.jsx:', citas);
+  
+  const horas = [
+    '08:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00'
+  ];
+
+
   return (
     <div className="flex-1 md:ml-64 p-6 lg:p-10 transition-all duration-300 font-['Nunito_Sans']">
        {/* Inyección de fuente específica para esta vista */}
@@ -98,135 +133,87 @@ export default function Citas() {
           {/* Calendar Controls */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <h3 className="text-xl font-bold text-[#2C3E50] dark:text-white">Junio 2025</h3>
+              <h3 className="text-xl font-bold text-[#2C3E50] dark:text-white">
+                {currentWeek.format('MMMM YYYY')}
+              </h3>
               <div className="flex gap-1">
-                <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-gray-500 dark:text-gray-300 transition-colors">
-                  <ChevronLeft className="w-5 h-5" />
+                <button onClick={() => setCurrentWeek(w => w.subtract(1, 'week'))}>
+                  <ChevronLeft />
                 </button>
-                <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-gray-500 dark:text-gray-300 transition-colors">
-                  <ChevronRight className="w-5 h-5" />
+
+                <button onClick={() => setCurrentWeek(w => w.add(1, 'week'))}>
+                  <ChevronRight />
                 </button>
+
               </div>
-            </div>
-            <div className="flex bg-gray-100 dark:bg-[#1A252F] p-1 rounded-lg">
-              <button className="px-3 py-1 text-sm font-medium rounded-md shadow-sm bg-white dark:bg-[#2C3E50] text-[#2C3E50] dark:text-white">Semana</button>
-              <button className="px-3 py-1 text-sm font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-[#2C3E50] dark:hover:text-white transition-colors">Mes</button>
-              <button className="px-3 py-1 text-sm font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-[#2C3E50] dark:hover:text-white transition-colors">Día</button>
             </div>
           </div>
 
           {/* Calendar Header Row */}
-          <div className="grid grid-cols-8 gap-4 mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
-            {['Hora', 'Lun 16', 'Mar 17', 'Mié 18', 'Jue 19', 'Vie 20', 'Sáb 21', 'Dom 22'].map((day, i) => (
-              <div key={i} className={`col-span-1 text-xs font-semibold uppercase tracking-wider text-center ${day === 'Mié 18' ? 'text-[#85C1E9]' : 'text-gray-400'}`}>
-                {day}
+          <div className="grid grid-cols-6 gap-4 mb-4 border-b pb-2">
+            <div className="text-xs font-semibold text-center text-gray-400">Hora</div>
+            {daysOfWeek.map(day => (
+              <div
+                key={day.format('YYYY-MM-DD')}
+                className="text-xs font-semibold text-center uppercase text-gray-400"
+              >
+                {day.format('ddd DD')}
               </div>
             ))}
           </div>
 
           {/* Calendar Body (Scrollable) */}
           <div className="space-y-4 overflow-y-auto max-h-[600px] hide-scrollbar pr-2 relative">
-            
-            {/* 09:00 AM Row */}
-            <div className="grid grid-cols-8 gap-4 min-h-[80px]">
-              <div className="col-span-1 text-xs text-gray-400 font-medium text-center pt-2">09:00 AM</div>
-              <div className="col-span-1"></div>
-              {/* Event Card */}
-              <div className="col-span-1">
-                <div className="bg-[#A2D9CE]/20 dark:bg-[#A2D9CE]/10 border-l-4 border-[#A2D9CE] p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow">
-                  <p className="text-xs font-bold text-[#2C3E50] dark:text-white truncate">Elena R.</p>
-                  <span className="inline-block mt-1 px-1.5 py-0.5 bg-white/50 dark:bg-[#2C3E50]/50 rounded text-[10px] font-semibold text-teal-700 dark:text-teal-300">Presencial</span>
+            {horas.map(hora => (
+              <div key={hora} className="grid grid-cols-6 gap-4 min-h-[80px]">
+                
+                {/* Hora */}
+                <div className="text-xs text-gray-400 text-center pt-2">
+                  {dayjs(`2026-01-01 ${hora}`).format('hh:mm A')}
                 </div>
-              </div>
-              <div className="col-span-1 bg-[#FBFCFC] dark:bg-[#34495E]/30 rounded-lg"></div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1">
-                <div className="bg-[#85C1E9]/20 dark:bg-[#85C1E9]/10 border-l-4 border-[#85C1E9] p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow">
-                  <p className="text-xs font-bold text-[#2C3E50] dark:text-white truncate">John D.</p>
-                  <span className="inline-block mt-1 px-1.5 py-0.5 bg-white/50 dark:bg-[#2C3E50]/50 rounded text-[10px] font-semibold text-blue-700 dark:text-blue-300">En línea</span>
-                </div>
-              </div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-            </div>
 
-            {/* 10:00 AM Row */}
-            <div className="grid grid-cols-8 gap-4 min-h-[80px]">
-              <div className="col-span-1 text-xs text-gray-400 font-medium text-center pt-2">10:00 AM</div>
-              <div className="col-span-1">
-                <div className="bg-[#85C1E9]/20 dark:bg-[#85C1E9]/10 border-l-4 border-[#85C1E9] p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow">
-                  <p className="text-xs font-bold text-[#2C3E50] dark:text-white truncate">Marcus L.</p>
-                  <span className="inline-block mt-1 px-1.5 py-0.5 bg-white/50 dark:bg-[#2C3E50]/50 rounded text-[10px] font-semibold text-blue-700 dark:text-blue-300">En línea</span>
-                </div>
-              </div>
-              <div className="col-span-1"></div>
-              {/* Event with Current Time Indicator */}
-              <div className="col-span-1 bg-[#FBFCFC] dark:bg-[#34495E]/30 rounded-lg relative">
-                <div className="absolute top-1/2 left-0 w-full border-t-2 border-red-400 z-10">
-                  <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-red-400 rounded-full"></div>
-                </div>
-                <div className="bg-[#A2D9CE]/20 dark:bg-[#A2D9CE]/10 border-l-4 border-[#A2D9CE] p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow relative z-0">
-                  <p className="text-xs font-bold text-[#2C3E50] dark:text-white truncate">Sophia W.</p>
-                  <span className="inline-block mt-1 px-1.5 py-0.5 bg-white/50 dark:bg-[#2C3E50]/50 rounded text-[10px] font-semibold text-teal-700 dark:text-teal-300">Presencial</span>
-                </div>
-              </div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-            </div>
+                {/* Lunes a Viernes */}
+                {daysOfWeek.map(day => {
+                const cita = getCita(day, hora);
 
-            {/* 11:00 AM Row */}
-            <div className="grid grid-cols-8 gap-4 min-h-[80px]">
-              <div className="col-span-1 text-xs text-gray-400 font-medium text-center pt-2">11:00 AM</div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1 bg-[#FBFCFC] dark:bg-[#34495E]/30 rounded-lg"></div>
-              <div className="col-span-1">
-                <div className="bg-[#85C1E9]/20 dark:bg-[#85C1E9]/10 border-l-4 border-[#85C1E9] p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow">
-                  <p className="text-xs font-bold text-[#2C3E50] dark:text-white truncate">Consulta</p>
-                  <span className="inline-block mt-1 px-1.5 py-0.5 bg-white/50 dark:bg-[#2C3E50]/50 rounded text-[10px] font-semibold text-blue-700 dark:text-blue-300">En línea</span>
-                </div>
-              </div>
-              <div className="col-span-1">
-                <div className="bg-[#A2D9CE]/20 dark:bg-[#A2D9CE]/10 border-l-4 border-[#A2D9CE] p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow">
-                  <p className="text-xs font-bold text-[#2C3E50] dark:text-white truncate">Grupal</p>
-                  <span className="inline-block mt-1 px-1.5 py-0.5 bg-white/50 dark:bg-[#2C3E50]/50 rounded text-[10px] font-semibold text-teal-700 dark:text-teal-300">Presencial</span>
-                </div>
-              </div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-            </div>
+                // Celda vacía
+                if (!cita) {
+                  return (
+                    <div
+                      key={day.format('YYYY-MM-DD')}
+                      className="rounded-lg bg-transparent"
+                    />
+                  );
+                }
 
-            {/* 12:00 PM Break */}
-            <div className="grid grid-cols-8 gap-4 min-h-[80px]">
-              <div className="col-span-1 text-xs text-gray-400 font-medium text-center pt-2">12:00 PM</div>
-              <div className="col-span-7 border-t border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                <span className="text-xs text-gray-400 uppercase tracking-widest bg-white dark:bg-[#2C3E50] px-2">Almuerzo</span>
-              </div>
-            </div>
+                // Celda con cita
+                return (
+                  <div
+                    key={cita.id ?? `${day.format('YYYY-MM-DD')}-${hora}`}
+                    onClick={() => {
+                      setSelectedCita(cita);
+                      setIsEditModalOpen(true);
+                    }}
+                    className={`p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow
+                      ${cita.tipo_sesion === 'seguimiento'
+                        ? 'bg-[#85C1E9]/20 border-l-4 border-[#85C1E9]'
+                        : 'bg-[#A2D9CE]/20 border-l-4 border-[#A2D9CE]'
+                      }`}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <p className="text-xs font-bold truncate">
+                      {cita.paciente?.user?.name ?? 'Paciente'}
+                    </p>
+                    <span className="inline-block mt-1 text-[10px] font-semibold">
+                      {cita.tipo_sesion}
+                    </span>
+                  </div>
+                );
+              })}
 
-            {/* 01:00 PM Row */}
-            <div className="grid grid-cols-8 gap-4 min-h-[80px]">
-              <div className="col-span-1 text-xs text-gray-400 font-medium text-center pt-2">01:00 PM</div>
-              <div className="col-span-1">
-                <div className="bg-[#85C1E9]/20 dark:bg-[#85C1E9]/10 border-l-4 border-[#85C1E9] p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow">
-                  <p className="text-xs font-bold text-[#2C3E50] dark:text-white truncate">Seguimiento</p>
-                  <span className="inline-block mt-1 px-1.5 py-0.5 bg-white/50 dark:bg-[#2C3E50]/50 rounded text-[10px] font-semibold text-blue-700 dark:text-blue-300">En línea</span>
-                </div>
               </div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1 bg-[#FBFCFC] dark:bg-[#34495E]/30 rounded-lg">
-                <div className="bg-[#85C1E9]/20 dark:bg-[#85C1E9]/10 border-l-4 border-[#85C1E9] p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow">
-                  <p className="text-xs font-bold text-[#2C3E50] dark:text-white truncate">Nuevo Paciente</p>
-                </div>
-              </div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-              <div className="col-span-1"></div>
-            </div>
-            
+            ))}
           </div>
         </div>
 
@@ -307,6 +294,15 @@ export default function Citas() {
           </div>
         </div>
       </div>
+      <EditarCitaModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedCita(null);
+        }}
+        cita={selectedCita}
+      />
+
     </div>
   );
 }
