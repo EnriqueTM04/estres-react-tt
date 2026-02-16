@@ -16,11 +16,14 @@ import {
 } from 'lucide-react';
 import useSWR from 'swr';
 import clienteAxios from '../../config/axios';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 // 2. COMPONENTE MAIN (Contenido Restante)
 // ----------------------------------------------------------------------
 export default function Pacientes() {
+
+  const navigate = useNavigate();
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
@@ -35,7 +38,7 @@ export default function Pacientes() {
     }
   }).then(res => res.data);
 
-  const {data, error, isLoading} = useSWR('/api/pacientes', fetcher);
+  const {data, isLoading} = useSWR('/api/pacientes', fetcher);
 
   if(isLoading) {
     return <div>Cargando...</div>
@@ -147,11 +150,13 @@ export default function Pacientes() {
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {data?.data.map((paciente) => (
-                <tr key={paciente.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer">
+                <tr key={paciente.id}
+                onClick={() => navigate(`/psicologo/pacientes/${paciente.id}`)}
+                className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer">
                   <td className="p-5">
                     <div className="flex items-center gap-4">
                       <img 
-                        alt="User avatar" 
+                        alt="Usuario avatar" 
                         className="w-10 h-10 rounded-full object-cover" 
                         src={`https://images.unsplash.com/photo-${paciente.img === "2" ? "1438761681033-6461ffad8d80" : paciente.img === "3" ? "1500648767791-00dcc994a43e" : "1544005313-94ddf0286df2"}?auto=format&fit=crop&q=80&w=100&h=100`} 
                       />
@@ -204,11 +209,14 @@ export default function Pacientes() {
                   <td className="p-5">
                     <div className={`flex items-center gap-2 text-sm ${paciente.isUrgent ? 'text-red-600 dark:text-red-400 font-medium' : 'text-[#5D6D7E] dark:text-[#BDC3C7]'}`}>
                       {paciente.isUrgent ? <AlertTriangle className="w-4 h-4"/> : <CalendarDays className="w-4 h-4"/>}
-                      {paciente.ultima_sesion.fecha ? new Date(paciente.ultima_sesion.fecha).toLocaleDateString() : 'Sin sesiones'}
+                      {paciente.ultima_sesion?.fecha ? new Date(paciente.ultima_sesion.fecha).toLocaleDateString() : 'Sin sesiones'}
                     </div>
                   </td>
                   <td className="p-5 text-right">
-                    <button className="text-gray-400 hover:text-[#85C1E9] dark:hover:text-white transition-colors">
+                    <button className="text-gray-400 hover:text-[#85C1E9] dark:hover:text-white transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}>
                       <MoreVertical className="w-5 h-5" />
                     </button>
                   </td>

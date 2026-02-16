@@ -11,6 +11,7 @@ import {
   Flower
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from "../../assets/Isotipo-Logo Final-03.svg";
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Sidebar() {
@@ -24,7 +25,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="h-20 flex items-center justify-center border-b border-white/10 dark:border-white/5">
         <div className="flex items-center gap-3">
-          <Flower className="text-[#A2D9CE] w-8 h-8" />
+          <img src={logo} alt="Logo VidaZen" className="w-14 h-14" />
           <h1 className="text-2xl font-bold text-white tracking-wide font-['Nunito_Sans']">VidaZen</h1>
         </div>
       </div>

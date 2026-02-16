@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import logo from "../../assets/logo.svg";
+import logo from "../../assets/Isotipo-Logo Final-03.svg";
 
 export default function HeaderInvitado() {
   const location = useLocation();

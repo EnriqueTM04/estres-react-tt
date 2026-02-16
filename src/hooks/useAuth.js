@@ -57,7 +57,7 @@ export const useAuth = ({middleware, url}) => {
             navigate('/auth/login')
         }
         if(middleware === 'guest' && user && user.role === 'admin') {
-            navigate('/admin')
+            navigate('/admin/inicio')
         }
         if(middleware === 'guest' && user && user.role === 'psicologo') {
             navigate('/psicologo/pacientes')

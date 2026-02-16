@@ -122,7 +122,7 @@ export default function Landing() {
                 <a className="text-[#4e9797] hover:text-[#0e1b1b] transition-colors text-base font-medium" href="#">Términos de Servicio</a>
                 <a className="text-[#4e9797] hover:text-[#0e1b1b] transition-colors text-base font-medium" href="#">Contacto</a>
               </div>
-              <p className="text-[#4e9797] text-sm">© 2024 SereneMind. Todos los derechos reservados.</p>
+              <p className="text-[#4e9797] text-sm">© 2026 VidaZen</p>
             </div>
           </div>
         </footer>

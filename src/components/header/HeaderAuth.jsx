@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo.svg";
+import logo from "../../assets/Isotipo-Logo Final-03.svg";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function HeaderAuth() {
-  const navigate = useNavigate();
+  useNavigate();
   const { logout } = useAuth({ middleware: "auth" });
 
   return (

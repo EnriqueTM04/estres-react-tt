@@ -10,7 +10,7 @@ const VidaZenProvider = ({ children }) => {
   const [citas, setCitas] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCita, setSelectedCita] = useState(null);
-
+  const [modalidad, setModalidad] = useState('presencial');
 
   const obtenerCitasPorSemana = async (week) => {
     const token = localStorage.getItem('AUTH_TOKEN');
@@ -53,7 +53,10 @@ const VidaZenProvider = ({ children }) => {
         isEditModalOpen,
         setIsEditModalOpen,
         selectedCita,
-        setSelectedCita
+        setSelectedCita,
+        modalidad,
+        setModalidad,
+        obtenerCitasPorSemana
       }}
     >
       {children}

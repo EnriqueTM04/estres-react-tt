@@ -29,15 +29,14 @@ export default function Citas() {
   const {
     currentWeek,
     setCurrentWeek,
-    citas,
     getCita,
     daysOfWeek,
     setIsEditModalOpen,
     setSelectedCita,
     isEditModalOpen,
-    selectedCita
+    selectedCita,
+    obtenerCitasPorSemana
   } = usevidaZen();
-    console.log('Citas en Citas.jsx:', citas);
   
   const horas = [
     '08:00',
@@ -67,20 +66,6 @@ export default function Citas() {
           <h2 className="text-3xl font-bold text-[#2C3E50] dark:text-white">Calendario de Citas</h2>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Gestiona tus sesiones e interacciones con pacientes.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center gap-2">
-            <Search className="text-gray-400 w-5 h-5" />
-            <input 
-              className="bg-transparent border-none outline-none text-sm text-[#2C3E50] dark:text-white placeholder-gray-400 focus:ring-0 w-32 sm:w-auto" 
-              placeholder="Buscar paciente..." 
-              type="text"
-            />
-          </div>
-          <button className="bg-[#85C1E9] hover:bg-[#6eb2e0] text-white dark:text-[#2C3E50] font-bold px-6 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2">
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Programar Cita</span>
-          </button>
-        </div>
       </div>
 
       {/* --- STATS CARDS --- */}
@@ -89,9 +74,9 @@ export default function Citas() {
         <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between">
           <div>
             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Próximas Sesiones</p>
-            <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">8</h3>
+            <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">0</h3>
             <p className="text-green-500 text-xs mt-2 font-medium flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +2 hoy
+              <TrendingUp className="w-3 h-3" /> +0 hoy
             </p>
           </div>
           <div className="p-3 bg-[#A2D9CE]/20 rounded-full">
@@ -100,7 +85,7 @@ export default function Citas() {
         </div>
 
         {/* Card 2 */}
-        <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between">
+        {/* <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between">
           <div>
             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Pendientes</p>
             <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">3</h3>
@@ -109,19 +94,19 @@ export default function Citas() {
           <div className="p-3 bg-[#85C1E9]/20 rounded-full">
             <Clock className="text-[#85C1E9] w-6 h-6" />
           </div>
-        </div>
+        </div> */}
 
         {/* Card 3 */}
-        <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between">
+        {/* <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between">
           <div>
             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">En línea hoy</p>
-            <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">5</h3>
+            <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">{}</h3>
             <p className="text-gray-400 text-xs mt-2">Sesiones remotas</p>
           </div>
           <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full">
             <Video className="text-indigo-500 dark:text-indigo-300 w-6 h-6" />
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* --- MAIN CONTENT GRID --- */}
@@ -216,89 +201,14 @@ export default function Citas() {
             ))}
           </div>
         </div>
-
-        {/* SIDE PANELS (Right Side) */}
-        <div className="w-full lg:w-80 flex flex-col gap-6">
-          
-          {/* Next Appointment Card */}
-          <div className="bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white mb-4">Siguiente Cita</h3>
-            <div className="flex items-center gap-4 mb-4">
-              <img alt="Patient" className="w-12 h-12 rounded-full object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" />
-              <div>
-                <h4 className="font-bold text-[#2C3E50] dark:text-white">Sophia Williams</h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Manejo de Ansiedad</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
-                <Calendar className="text-[#A2D9CE] w-5 h-5" />
-                <span>Hoy, 18 Oct</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
-                <Clock className="text-[#A2D9CE] w-5 h-5" />
-                <span>10:00 AM - 11:00 AM</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
-                <MapPin className="text-[#A2D9CE] w-5 h-5" />
-                <span className="bg-[#A2D9CE]/20 text-teal-800 dark:text-teal-200 text-xs px-2 py-0.5 rounded font-medium">Presencial</span>
-              </div>
-            </div>
-            <div className="mt-6 flex gap-2">
-              <button className="flex-1 bg-[#2C3E50] hover:bg-[#34495E] text-white text-sm font-semibold py-2 rounded-xl transition-colors">Detalles</button>
-              <button className="flex-1 border border-[#2C3E50] text-[#2C3E50] dark:border-white dark:text-white hover:bg-gray-50 dark:hover:bg-[#34495E] text-sm font-semibold py-2 rounded-xl transition-colors">Reagendar</button>
-            </div>
-          </div>
-
-          {/* Requests Card */}
-          <div className="bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white">Solicitudes</h3>
-              <span className="bg-[#85C1E9] text-white text-xs font-bold px-2 py-0.5 rounded-full">3</span>
-            </div>
-            <div className="space-y-4">
-              
-              {/* Request Item 1 */}
-              <div className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-[#FBFCFC] dark:bg-[#1A252F]">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h5 className="text-sm font-bold text-[#2C3E50] dark:text-white">Alex Johnson</h5>
-                    <p className="text-xs text-gray-500">Primera Consulta</p>
-                  </div>
-                  <span className="bg-[#85C1E9]/20 text-blue-800 dark:text-blue-200 text-[10px] px-1.5 py-0.5 rounded font-medium">En línea</span>
-                </div>
-                <p className="text-xs text-gray-400 mb-3">Sol: 20 Oct, 02:00 PM</p>
-                <div className="flex gap-2">
-                  <button className="flex-1 bg-[#A2D9CE] hover:bg-teal-300 text-[#2C3E50] text-xs font-bold py-1.5 rounded transition-colors flex justify-center"><Check className="w-4 h-4"/></button>
-                  <button className="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 text-gray-600 dark:text-gray-300 text-xs font-bold py-1.5 rounded transition-colors flex justify-center"><X className="w-4 h-4"/></button>
-                </div>
-              </div>
-
-              {/* Request Item 2 */}
-              <div className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-[#FBFCFC] dark:bg-[#1A252F]">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h5 className="text-sm font-bold text-[#2C3E50] dark:text-white">Maria G.</h5>
-                    <p className="text-xs text-gray-500">Sesión Regular</p>
-                  </div>
-                  <span className="bg-[#A2D9CE]/20 text-teal-800 dark:text-teal-200 text-[10px] px-1.5 py-0.5 rounded font-medium">Presencial</span>
-                </div>
-                <p className="text-xs text-gray-400 mb-3">Sol: 21 Oct, 10:00 AM</p>
-                <div className="flex gap-2">
-                  <button className="flex-1 bg-[#A2D9CE] hover:bg-teal-300 text-[#2C3E50] text-xs font-bold py-1.5 rounded transition-colors flex justify-center"><Check className="w-4 h-4"/></button>
-                  <button className="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 text-gray-600 dark:text-gray-300 text-xs font-bold py-1.5 rounded transition-colors flex justify-center"><X className="w-4 h-4"/></button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
       </div>
+
       <EditarCitaModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
           setSelectedCita(null);
+          obtenerCitasPorSemana(currentWeek.format('YYYY-MM-DD'));
         }}
         cita={selectedCita}
       />

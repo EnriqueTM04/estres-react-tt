@@ -2,6 +2,7 @@ import { createRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Alerta from '../components/Alerta'
 import { useAuth } from '../hooks/useAuth'
+import logo from "../assets/Isotipo-Logo Final-04.svg";
 import { 
   Moon, 
   Sun, 
@@ -63,7 +64,7 @@ export default function Login() {
 
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-8">
-              <Flower className="text-[#2C3E50] w-10 h-10" />
+              <img src={logo} alt="Logo VidaZen" className="w-14 h-14" />
               <h1 className="font-['Montserrat'] font-bold text-3xl text-[#2C3E50] tracking-tight">Vidazen</h1>
             </div>
             
@@ -99,7 +100,7 @@ export default function Login() {
 
           <div className="mb-10">
             <h3 className="text-3xl font-['Montserrat'] font-bold text-[#2C3E50] dark:text-white mb-2">Iniciar sesión</h3>
-            <p className="text-gray-500 dark:text-gray-400 font-sans">Bienvenido de nuevo, Psicólogo.</p>
+            <p className="text-gray-500 dark:text-gray-400 font-sans">Bienvenido de nuevo</p>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -145,7 +146,7 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <input 
                 id="remember" 
                 type="checkbox" 
@@ -154,13 +155,13 @@ export default function Login() {
               <label className="text-sm text-gray-500 dark:text-gray-400" htmlFor="remember">
                 Mantener sesión iniciada
               </label>
-            </div>
+            </div> */}
 
             <button 
               type="submit"
-              className="w-full py-4 bg-[#2C3E50] text-white font-['Montserrat'] font-bold rounded-xl hover:bg-[#2C3E50]/90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-[#2C3E50]/20 flex items-center justify-center gap-2"
+              className="cursor-pointer w-full py-4 bg-[#2C3E50] text-white font-['Montserrat'] font-bold rounded-xl hover:bg-[#2C3E50]/90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-[#2C3E50]/20 flex items-center justify-center gap-2"
             >
-              Acceder al Panel
+              Iniciar sesión
               <ArrowRight className="w-5 h-5" />
             </button>
           </form>
@@ -177,7 +178,7 @@ export default function Login() {
           <div className="mt-8 flex justify-center gap-6 text-[10px] uppercase tracking-widest text-gray-400 font-bold">
             <a href="#" className="hover:text-[#2C3E50] transition-colors">Términos</a>
             <a href="#" className="hover:text-[#2C3E50] transition-colors">Privacidad</a>
-            <a href="#" className="hover:text-[#2C3E50] transition-colors">Ayuda</a>
+            {/* <a href="#" className="hover:text-[#2C3E50] transition-colors">Ayuda</a> */}
           </div>
         </div>
       </div>
