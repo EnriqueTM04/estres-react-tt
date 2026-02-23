@@ -2,14 +2,11 @@ import React, { useMemo } from 'react';
 import { 
   ChevronRight, 
   FileText, 
-  TrendingUp, 
   Smile, 
   CalendarCheck, 
   CheckCircle2, 
   Plus, 
   Brain,
-  PenTool, 
-  AlertTriangle, 
   Eye,
   ArrowLeft
 } from 'lucide-react';

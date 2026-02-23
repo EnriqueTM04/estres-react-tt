@@ -10,7 +10,6 @@ export default function Inicio() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [psicologoEditar, setPsicologoEditar] = useState(null);
   
-  // 1. Sacamos la función del useEffect para poder reutilizarla
   const consultarPsicologos = async () => {
     try {
       setLoading(true);

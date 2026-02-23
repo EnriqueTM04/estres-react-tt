@@ -3,13 +3,14 @@ import Layout from './layouts/Layout.jsx'
 import AuthLayout from './layouts/AuthLayout.jsx'
 import Inicio from './views/admin/Inicio.jsx'
 import Login from './views/Login.jsx'
-import Registro from './views/Registro.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
 import Landing from './views/guest/landing.jsx'
 import Pacientes from './views/psicologo/pacientes.jsx'
 import Citas from './views/psicologo/Citas.jsx'
 import Paciente from './views/psicologo/Paciente.jsx'
 import Actividad from './views/psicologo/Actividad.jsx'
+import { CitasProvider } from './context/CitasProvider.jsx'
+import Dashboard from './views/psicologo/Dashboard.jsx'
 
 const router = createBrowserRouter([
     {
@@ -24,10 +25,6 @@ const router = createBrowserRouter([
                 path: 'login',
                 element: <Login />
             },
-            {
-                path: 'register',
-                element: <Registro />
-            }
         ]
     },
     {
@@ -44,6 +41,10 @@ const router = createBrowserRouter([
         path: '/psicologo',
         element: <Layout />,
         children: [
+            {
+                path: 'dashboard',
+                element: <Dashboard />
+            },
             {
                 path: 'pacientes',
                 element: <Pacientes />,
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
             },
             {
                 path: 'citas',
-                element: <Citas />
+                element: <CitasProvider><Citas /></CitasProvider>,
             },
         ]
     }

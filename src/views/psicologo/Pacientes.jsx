@@ -1,26 +1,16 @@
 import React from 'react';
 import { 
-  LayoutDashboard, 
   Users, 
-  Calendar, 
-  MessageSquare, 
-  FileText, 
-  Settings, 
-  Search, 
   Plus, 
   MoreVertical, 
   CalendarDays,
   AlertTriangle,
   TrendingUp,
-  Flower
 } from 'lucide-react';
 import useSWR from 'swr';
 import clienteAxios from '../../config/axios';
 import { useNavigate } from 'react-router-dom';
 
-// ----------------------------------------------------------------------
-// 2. COMPONENTE MAIN (Contenido Restante)
-// ----------------------------------------------------------------------
 export default function Pacientes() {
 
   const navigate = useNavigate();

@@ -14,22 +14,6 @@ export default function HeaderInvitado() {
         />
         <span className="font-semibold text-gray-800 text-lg">VidaZen</span>
       </Link>
-
-      {location.pathname === "/auth/login" ? (
-        <Link
-          to="/auth/register"
-          className="px-4 py-2 text-sm font-medium rounded-md bg-cyan-400 text-white hover:bg-cyan-500 transition-colors"
-        >
-          Registrarse
-        </Link>
-      ) : (
-        <Link
-          to="/auth/login"
-          className="px-4 py-2 text-sm font-medium rounded-md bg-cyan-400 text-white hover:bg-cyan-500 transition-colors"
-        >
-          Iniciar sesión
-        </Link>
-      )}
     </header>
   );
 }

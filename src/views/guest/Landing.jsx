@@ -69,9 +69,6 @@ export default function Landing() {
                 </div>
                 
                 <div className="flex flex-wrap gap-3 justify-center mt-4">
-                  <Link to="/auth/register" className="flex items-center justify-center rounded-xl h-10 px-6 bg-[#19e6e6] hover:bg-[#15cfcf] text-[#0e1b1b] text-sm font-bold transition-transform active:scale-95 md:h-12 md:text-base">
-                    Registrarse
-                  </Link>
                   <Link to="/auth/login" className="flex items-center justify-center rounded-xl h-10 px-6 bg-[#e7f3f3] hover:bg-[#d5eaea] text-[#0e1b1b] text-sm font-bold transition-transform active:scale-95 md:h-12 md:text-base">
                     Iniciar Sesión
                   </Link>

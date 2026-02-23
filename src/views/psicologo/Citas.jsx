@@ -1,5 +1,5 @@
 import React from 'react';
-import usevidaZen from '../../hooks/useVidaZen';
+import useCitas from '../../hooks/useCitas';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import weekday from 'dayjs/plugin/weekday';
@@ -11,18 +11,10 @@ dayjs.extend(weekday);
 dayjs.locale('es');
 
 import { 
-  Search, 
-  Plus, 
   TrendingUp, 
   Calendar, 
-  Clock, 
-  Video, 
   ChevronLeft, 
   ChevronRight, 
-  MapPin, 
-  Check, 
-  X,
-  MoreHorizontal
 } from 'lucide-react';
 
 export default function Citas() {
@@ -36,7 +28,7 @@ export default function Citas() {
     isEditModalOpen,
     selectedCita,
     obtenerCitasPorSemana
-  } = usevidaZen();
+  } = useCitas();
   
   const horas = [
     '08:00',
@@ -88,30 +80,6 @@ export default function Citas() {
             <Calendar className="text-[#A2D9CE] w-6 h-6" />
           </div>
         </div>
-
-        {/* Card 2 */}
-        {/* <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between">
-          <div>
-            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Pendientes</p>
-            <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">3</h3>
-            <p className="text-[#85C1E9] text-xs mt-2 font-medium">Requiere acción</p>
-          </div>
-          <div className="p-3 bg-[#85C1E9]/20 rounded-full">
-            <Clock className="text-[#85C1E9] w-6 h-6" />
-          </div>
-        </div> */}
-
-        {/* Card 3 */}
-        {/* <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between">
-          <div>
-            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">En línea hoy</p>
-            <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">{}</h3>
-            <p className="text-gray-400 text-xs mt-2">Sesiones remotas</p>
-          </div>
-          <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full">
-            <Video className="text-indigo-500 dark:text-indigo-300 w-6 h-6" />
-          </div>
-        </div> */}
       </div>
 
       {/* --- MAIN CONTENT GRID --- */}

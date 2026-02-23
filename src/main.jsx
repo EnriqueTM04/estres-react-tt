@@ -7,8 +7,6 @@ import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <VidaZenProvider>
-      <RouterProvider router={router} />
-    </VidaZenProvider>
+    <RouterProvider router={router} />
   </StrictMode>,
 )
