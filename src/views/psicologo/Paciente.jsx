@@ -14,8 +14,10 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom'; 
+import { useRef, useState } from 'react';
 import useSWR from 'swr';
 import clienteAxios from '../../config/axios'; 
+import jsPDF from 'jspdf';
 
 // --- CONFIGURACIÓN DE CHART.JS ---
 import {
@@ -43,9 +45,13 @@ ChartJS.register(
 );
 
 export default function Paciente() {
-  const { id } = useParams(); // Obtenemos el ID del paciente desde la URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('AUTH_TOKEN');
+
+  // NUEVO: Referencia para el contenedor del PDF y estado de carga
+  const printRef = useRef();
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // --- FETCHER PARA SWR ---
   const fetcher = (url) => clienteAxios.get(url, {
@@ -120,6 +126,184 @@ export default function Paciente() {
     },
   };
 
+  const generarPDF = async () => {
+  if (!apiData) return;
+  setIsGeneratingPDF(true);
+
+  try {
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    let currentY = 20;
+
+    // --- 1. ENCABEZADO ESTILO BANNER ---
+    doc.setFillColor(44, 62, 80); // Azul oscuro (#2C3E50)
+    doc.rect(0, 0, pageWidth, 40, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('REPORTE DE SEGUIMIENTO PSICOLÓGICO', margin, 22);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`ID de Control: ${id}`, margin, 30);
+    doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, margin, 35);
+
+    // --- 2. INFORMACIÓN PERSONAL (2 COLUMNAS) ---
+    currentY = 55;
+    doc.setTextColor(44, 62, 80);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Información del Paciente', margin, currentY);
+    
+    currentY += 4;
+    doc.setDrawColor(133, 193, 233); // Azul claro (#85C1E9)
+    doc.setLineWidth(0.8);
+    doc.line(margin, currentY, pageWidth - margin, currentY);
+
+    currentY += 10;
+    doc.setFontSize(11);
+    
+    // Columna 1
+    doc.setFont('helvetica', 'bold');
+    doc.text('Nombre:', margin, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${perfil.nombre}`, margin + 20, currentY);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Email:', margin, currentY + 8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${perfil.email}`, margin + 20, currentY + 8);
+
+    // Columna 2 (Sexo y Edad)
+    const rightCol = pageWidth / 2 + 10;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Edad:', rightCol, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${perfil.edad || 'N/A'} años`, rightCol + 15, currentY);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Sexo:', rightCol, currentY + 8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${perfil.sexo || 'N/A'}`, rightCol + 15, currentY + 8);
+
+    // --- 3. ESTADÍSTICAS RÁPIDAS (TARJETAS) ---
+    currentY += 20;
+    doc.setFillColor(245, 247, 250);
+    doc.roundedRect(margin, currentY, pageWidth - (margin * 2), 25, 3, 3, 'F');
+    
+    const colWidth = (pageWidth - (margin * 2)) / 3;
+    
+    // Nivel de Estrés
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text('ESTADO DE ESTRÉS', margin + 10, currentY + 8);
+    doc.setFontSize(12);
+    doc.setTextColor(44, 62, 80);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${stats.animo_actual || 'Estable'}`, margin + 10, currentY + 18);
+
+    // Sesiones
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    doc.text('SESIONES TOTALES', margin + colWidth + 5, currentY + 8);
+    doc.setFontSize(12);
+    doc.setTextColor(44, 62, 80);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${stats.total_sesiones}`, margin + colWidth + 5, currentY + 18);
+
+    // Tareas
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    doc.text('% CUMPLIMIENTO', margin + (colWidth * 2) + 5, currentY + 8);
+    doc.setFontSize(12);
+    doc.setTextColor(44, 62, 80);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${stats.tareas_completadas_porcentaje}%`, margin + (colWidth * 2) + 5, currentY + 18);
+
+    // --- 4. TABLA DE MÓDULOS ---
+    currentY += 40;
+    doc.setFontSize(14);
+    doc.text('Avance de Módulos', margin, currentY);
+    
+    currentY += 6;
+    // Cabecera Tabla
+    doc.setFillColor(133, 193, 233);
+    doc.rect(margin, currentY, pageWidth - (margin * 2), 10, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text('Módulo Asignado', margin + 5, currentY + 6.5);
+    doc.text('Estado', margin + 90, currentY + 6.5);
+    doc.text('Progreso', margin + 140, currentY + 6.5);
+
+    currentY += 10;
+    doc.setTextColor(60, 60, 60);
+    doc.setFont('helvetica', 'normal');
+
+    modulos.forEach((modulo, index) => {
+      // Filas con color alterno
+      if (index % 2 === 0) {
+        doc.setFillColor(249, 251, 253);
+        doc.rect(margin, currentY, pageWidth - (margin * 2), 10, 'F');
+      }
+      
+      doc.text(modulo.nombre, margin + 5, currentY + 6.5);
+      doc.text(modulo.estado.charAt(0).toUpperCase() + modulo.estado.slice(1), margin + 90, currentY + 6.5);
+      doc.text(`${modulo.progreso}%`, margin + 140, currentY + 6.5);
+      
+      doc.setDrawColor(240, 240, 240);
+      doc.line(margin, currentY + 10, pageWidth - margin, currentY + 10);
+      currentY += 10;
+    });
+
+    // --- 5. GRÁFICO DE ESTRÉS ---
+    const chartCanvas = document.querySelector('canvas');
+    if (chartCanvas) {
+      if (currentY + 80 > pageHeight) {
+        doc.addPage();
+        currentY = 20;
+      } else {
+        currentY += 15;
+      }
+
+      doc.setFontSize(14);
+      doc.setTextColor(44, 62, 80);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Análisis Evolutivo de Estrés', margin, currentY);
+      
+      const chartImg = chartCanvas.toDataURL('image/png', 1.0);
+      // Centramos el gráfico
+      doc.addImage(chartImg, 'PNG', margin, currentY + 5, pageWidth - (margin * 2), 65);
+    }
+
+    // --- PIE DE PÁGINA ---
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(170, 170, 170);
+      doc.text(
+        `Este reporte es un documento informativo generado por la plataforma. Página ${i} de ${pageCount}`,
+        pageWidth / 2, 
+        pageHeight - 10, 
+        { align: 'center' }
+      );
+    }
+
+    doc.save(`Reporte_Paciente_${perfil.nombre.replace(/\s+/g, '_')}.pdf`);
+
+  } catch (err) {
+    console.error('Error al generar el PDF:', err);
+    alert('Hubo un error al generar el PDF. Revisa la consola.');
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
+
   // --- ESTADO DE CARGA Y ERROR ---
   if (isLoading) return (
     <div className="flex-1 md:ml-64 p-10 flex justify-center items-center h-screen">
@@ -135,9 +319,6 @@ export default function Paciente() {
 
   // Desestructuración para facilitar el uso en el JSX
   const { perfil, stats, modulos, actividad_reciente } = apiData;
-
-  console.log(modulos); // Para depuración
-  console.log(actividad_reciente); // Para depuración
 
   return (
     <div className="flex-1 md:ml-64 p-6 lg:p-10 transition-all duration-300 font-['Nunito_Sans']">
@@ -161,185 +342,199 @@ export default function Paciente() {
           <p className="text-sm text-gray-400">{perfil.email}</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#2C3E50] border border-gray-200 dark:border-gray-600 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm font-medium">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#2C3E50] border border-gray-200 dark:border-gray-600 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm font-medium">
             <FileText className="w-5 h-5" />
             Notas
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-[#85C1E9] text-white rounded-xl hover:bg-[#6eb2e0] transition-colors shadow-md font-bold">
+          </button> */}
+          <button 
+            onClick={generarPDF}
+            disabled={isGeneratingPDF}
+            className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-[#85C1E9] text-white rounded-xl hover:bg-[#6eb2e0] transition-colors shadow-md font-bold disabled:opacity-70 disabled:cursor-not-allowed"
+          >
             <FileText className="w-5 h-5" />
-            Generar reporte
+            {isGeneratingPDF ? 'Generando...' : 'Generar reporte'}
           </button>
         </div>
       </header>
 
-      {/* --- STATS GRID --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-6">
-          
-          {/* Stat 1: Estado de Ánimo */}
-          <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Estado de estres</p>
-              <p className="text-2xl font-bold text-[#2C3E50] dark:text-white mt-1">
-                {stats.animo_actual || 'Estable'}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-[#A2D9CE]/20 rounded-full flex items-center justify-center text-[#A2D9CE]">
-              <Smile className="w-6 h-6" />
-            </div>
-          </div>
-
-          {/* Stat 2: Total Sesiones */}
-          <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total de sesiones</p>
-              <p className="text-2xl font-bold text-[#2C3E50] dark:text-white mt-1">
-                {stats.total_sesiones}
-              </p>
-              <span className="text-xs text-[#85C1E9] font-semibold flex items-center mt-1">
-                 {stats.proxima_sesion ? `Próxima: ${new Date(stats.proxima_sesion).toLocaleDateString()}` : 'Sin próxima sesión agendada'}
-              </span>
-            </div>
-            <div className="w-12 h-12 bg-[#85C1E9]/20 rounded-full flex items-center justify-center text-[#85C1E9]">
-              <CalendarCheck className="w-6 h-6" />
-            </div>
-          </div>
-
-          {/* Stat 3: Tareas Completadas */}
-          <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Tareas Completadas</p>
-              <p className="text-2xl font-bold text-[#2C3E50] dark:text-white mt-1">
-                {stats.tareas_completadas_porcentaje}%
-              </p>
-              <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                Total: {stats.total_tareas} asignadas
-              </span>
-            </div>
-            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-500">
-              <CheckCircle2 className="w-6 h-6" />
-            </div>
-          </div>
-
-        </div>
-
-        {/* --- GRAPH SECTION --- */}
-        <div className="col-span-1 lg:col-span-2 bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white">Historial de Estrés</h3>
-            {/* ... select ... */}
-          </div>
-          
-          {/* IMPORTANTE: El div contenedor debe tener altura (h-64) */}
-          <div className="relative h-64 w-full">
-            {chartData.labels && chartData.labels.length > 0 ? (
-               <Line data={chartData} options={chartOptions} />
-            ) : (
-               <div className="flex items-center justify-center h-full text-gray-400">
-                 No hay suficientes datos para graficar.
-               </div>
-            )}
-          </div>
-        </div>
-
-        {/* --- MODULES SECTION (Dinámico) --- */}
-        <div className="col-span-1 bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-          <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white mb-6">Módulos Asignados</h3>
-          <div className="space-y-6 max-h-64 overflow-y-auto pr-2">
+      {/* CONTENEDOR DEL PDF: Todo lo que esté dentro de este div saldrá en el reporte */}
+      <div ref={printRef}>
+        {/* --- STATS GRID --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-6">
             
-            {modulos && modulos.length > 0 ? (
-                modulos.map((modulo) => (
-                    <div key={modulo.id}>
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{modulo.nombre}</span>
-                        <span className={`text-xs font-bold ${modulo.progreso >= 80 ? 'text-indigo-400' : 'text-[#85C1E9]'}`}>
-                            {modulo.progreso}%
-                        </span>
-                    </div>
-                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5">
-                        <div 
-                            className={`h-2.5 rounded-full ${modulo.progreso >= 80 ? 'bg-indigo-400' : 'bg-[#85C1E9]'}`} 
-                            style={{ width: `${modulo.progreso}%` }}
-                        ></div>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1 capitalize">Estado: {modulo.estado}</p>
-                    </div>
-                ))
-            ) : (
-                <p className="text-sm text-gray-500">No hay módulos asignados actualmente.</p>
-            )}
+            {/* Stat 1: Estado de Ánimo */}
+            <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Estado de estres</p>
+                <p className="text-2xl font-bold text-[#2C3E50] dark:text-white mt-1">
+                  {stats.animo_actual || 'Estable'}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-[#A2D9CE]/20 rounded-full flex items-center justify-center text-[#A2D9CE]">
+                <Smile className="w-6 h-6" />
+              </div>
+            </div>
 
-            <div className="pt-4 mt-2 border-t border-gray-100 dark:border-gray-700">
-              <button className="w-full py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:border-[#85C1E9] hover:text-[#85C1E9] transition-colors flex items-center justify-center gap-2">
-                <Plus className="w-4 h-4" /> Asignar Nuevo Módulo
-              </button>
+            {/* Stat 2: Total Sesiones */}
+            <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total de sesiones</p>
+                <p className="text-2xl font-bold text-[#2C3E50] dark:text-white mt-1">
+                  {stats.total_sesiones}
+                </p>
+                <span className="text-xs text-[#85C1E9] font-semibold flex items-center mt-1">
+                   {stats.proxima_sesion ? `Próxima: ${new Date(stats.proxima_sesion).toLocaleDateString()}` : 'Sin próxima sesión agendada'}
+                </span>
+              </div>
+              <div className="w-12 h-12 bg-[#85C1E9]/20 rounded-full flex items-center justify-center text-[#85C1E9]">
+                <CalendarCheck className="w-6 h-6" />
+              </div>
+            </div>
+
+            {/* Stat 3: Tareas Completadas */}
+            <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Tareas Completadas</p>
+                <p className="text-2xl font-bold text-[#2C3E50] dark:text-white mt-1">
+                  {stats.tareas_completadas_porcentaje}%
+                </p>
+                <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  Total: {stats.total_tareas} asignadas
+                </span>
+              </div>
+              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-500">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+            </div>
+
+          </div>
+
+          {/* --- GRAPH SECTION --- */}
+          <div className="col-span-1 lg:col-span-2 bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white">Historial de Estrés</h3>
+            </div>
+            
+            {/* IMPORTANTE: El div contenedor debe tener altura (h-64) */}
+            <div className="relative h-64 w-full">
+              {chartData.labels && chartData.labels.length > 0 ? (
+                 <Line data={chartData} options={chartOptions} />
+              ) : (
+                 <div className="flex items-center justify-center h-full text-gray-400">
+                   No hay suficientes datos para graficar.
+                 </div>
+              )}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* --- ACTIVITY TABLE (Dinámica) --- */}
-      <div className="bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-          <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white">Actividad Reciente</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-[#FBFCFC] dark:bg-gray-800 text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              <tr>
-                <th className="px-6 py-4 font-semibold">Actividad</th>
-                <th className="px-6 py-4 font-semibold">Fecha Actualización</th>
-                <th className="px-6 py-4 font-semibold">Progreso</th>
-                <th className="px-6 py-4 font-semibold">Estado</th>
-                <th className="px-6 py-4 font-semibold text-right">Acción</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+          {/* --- MODULES SECTION (Dinámico) --- */}
+          <div className="col-span-1 bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white mb-6">Módulos Asignados</h3>
+            <div className="space-y-6 max-h-64 overflow-y-auto pr-2">
               
-              {actividad_reciente && actividad_reciente.length > 0 ? (
-                  actividad_reciente.map((actividad) => (
-                    <tr key={actividad.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                        <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#A2D9CE]/20 flex items-center justify-center text-[#A2D9CE]">
-                                <Brain className="w-4 h-4" />
-                            </div>
-                            <span className="font-medium text-[#2C3E50] dark:text-gray-200">
-                                {actividad.nombre}
-                            </span>
-                        </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                            {actividad.fecha_actualizacion}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                             {actividad.progreso}%
-                        </td>
-                        <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize 
-                            ${actividad.estado === 'completado' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                            {actividad.estado}
-                        </span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                        <button className="text-gray-400 hover:text-[#85C1E9] transition-colors">
-                            <Eye className="w-5 h-5" />
-                        </button>
-                        </td>
-                    </tr>
+              {modulos && modulos.length > 0 ? (
+                  modulos.map((modulo) => (
+                      <div key={modulo.id}>
+                      <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{modulo.nombre}</span>
+                          <span className={`text-xs font-bold ${modulo.progreso >= 80 ? 'text-indigo-400' : 'text-[#85C1E9]'}`}>
+                              {modulo.progreso}%
+                          </span>
+                      </div>
+                      <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5">
+                          <div 
+                              className={`h-2.5 rounded-full ${modulo.progreso >= 80 ? 'bg-indigo-400' : 'bg-[#85C1E9]'}`} 
+                              style={{ width: `${modulo.progreso}%` }}
+                          ></div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1 capitalize">Estado: {modulo.estado}</p>
+                      </div>
                   ))
               ) : (
-                  <tr>
-                      <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
-                          No hay actividad reciente registrada.
-                      </td>
-                  </tr>
+                  <p className="text-sm text-gray-500">No hay módulos asignados actualmente.</p>
               )}
 
-            </tbody>
-          </table>
+              <div className="pt-4 mt-2 border-t border-gray-100 dark:border-gray-700">
+                <button 
+                  onClick={() => navigate(`/psicologo/pacientes/${id}/nueva-actividad`)}
+                  className="w-full py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:border-[#85C1E9] hover:text-[#85C1E9] transition-colors flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" /> Asignar Nuevo Módulo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* --- ACTIVITY TABLE (Dinámica) --- */}
+        <div className="bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+            <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white">Actividad Reciente</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-[#FBFCFC] dark:bg-gray-800 text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <tr>
+                  <th className="px-6 py-4 font-semibold">Actividad</th>
+                  <th className="px-6 py-4 font-semibold">Fecha Actualización</th>
+                  <th className="px-6 py-4 font-semibold">Progreso</th>
+                  <th className="px-6 py-4 font-semibold">Estado</th>
+                  <th className="px-6 py-4 font-semibold text-right">Acción</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                
+                {actividad_reciente && actividad_reciente.length > 0 ? (
+                    actividad_reciente.map((actividad) => (
+                      <tr key={actividad.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                          <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-[#A2D9CE]/20 flex items-center justify-center text-[#A2D9CE]">
+                                  <Brain className="w-4 h-4" />
+                              </div>
+                              <span className="font-medium text-[#2C3E50] dark:text-gray-200">
+                                  {actividad.nombre}
+                              </span>
+                          </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                              {actividad.fecha_actualizacion}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                               {actividad.progreso}%
+                          </td>
+                          <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize 
+                              ${actividad.estado === 'completado' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                              {actividad.estado}
+                          </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                          <button 
+                            onClick={() => navigate(`/psicologo/pacientes/${id}/editar-actividad/${actividad.id}`)}
+                            className="text-gray-400 hover:text-[#85C1E9] transition-colors"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                          </td>
+                      </tr>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                            No hay actividad reciente registrada.
+                        </td>
+                    </tr>
+                )}
+
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+      {/* FIN DEL CONTENEDOR DEL PDF */}
+
     </div>
   );
 }

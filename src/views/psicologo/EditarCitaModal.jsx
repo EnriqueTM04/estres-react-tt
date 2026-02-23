@@ -10,13 +10,13 @@ import {
 
 export default function EditarCitaModal({ isOpen, onClose, cita }) {
 
-  // 🔒 Hooks SIEMPRE arriba
+  // Hooks
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('09:00');
   const [modalidad, setModalidad] = useState('');
   const [notas, setNotas] = useState('');
 
-  // ⏱ Sincronizar cuando cambia la cita
+  // Sincronizar cuando cambia la cita
   useEffect(() => {
     if (!cita) return;
 
@@ -26,7 +26,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
     setNotas(cita.notas ?? '');
   }, [cita]);
 
-  // ⛔ Early return DESPUÉS de hooks
+  // Early return DESPUÉS de hooks
   if (!isOpen || !cita) return null;
 
   const HORAS_DISPONIBLES = [
@@ -34,7 +34,6 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
     '14:00','15:00','16:00','17:00'
   ];
 
-  // 💾 Guardar cambios
   const handleSave = async (id) => {
     const token = localStorage.getItem('AUTH_TOKEN');
 
@@ -60,7 +59,6 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
     }
   };
 
-  // 🗑 Eliminar cita
   const handleDelete = async (id) => {
     const token = localStorage.getItem('AUTH_TOKEN');
 

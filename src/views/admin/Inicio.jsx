@@ -1,38 +1,75 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import clienteAxios from '../../config/axios';
+import ModalAgregarPsicologo from './ModalCrearPsicologo';
 
 export default function Inicio() {
   const [psicologos, setPsicologos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPsicologos, setTotalPsicologos] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [psicologoEditar, setPsicologoEditar] = useState(null);
+  
+  // 1. Sacamos la función del useEffect para poder reutilizarla
+  const consultarPsicologos = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('AUTH_TOKEN');
+
+      const { data } = await clienteAxios.get('/api/psicologos', {
+        params: { role: 'admin' },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setPsicologos(data.data); 
+      setTotalPsicologos(data.data.length);
+    } catch (error) {
+      console.error('Error al cargar psicólogos', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const consultarPsicologos = async () => {
-      try {
-        const token = localStorage.getItem('AUTH_TOKEN');
-
-        const { data } = await clienteAxios.get('/api/psicologos', {
-          params: {
-            role: 'admin'
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setPsicologos(data.data); 
-        setTotalPsicologos(data.data.length);
-      } catch (error) {
-        console.error('Error al cargar psicólogos', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     consultarPsicologos();
   }, []);
+
+  // Función para abrir el modal en modo CREAR
+  const handleCrear = () => {
+    setPsicologoEditar(null);
+    setIsModalOpen(true);
+  };
+
+  // Función para abrir el modal en modo EDITAR
+  const handleEditar = (psicologo) => {
+    setPsicologoEditar(psicologo); 
+    setIsModalOpen(true);
+  };
+
+  // Función para eliminar un psicólogo
+  const handleEliminar = async (psicologo) => {
+    if (window.confirm(`¿Estás seguro de eliminar a ${psicologo.user.name}?`)) {
+      try {
+        const token = localStorage.getItem('AUTH_TOKEN');
+        await clienteAxios.delete(`/api/psicologos/${psicologo.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        consultarPsicologos(); 
+      } catch (error) {
+        console.error('Error al eliminar psicólogo', error);
+      }
+      
+      consultarPsicologos();
+    }
+  };
+
+  if(loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#0e1b1b]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#f8fcfc] font-sans overflow-x-hidden">
@@ -58,9 +95,11 @@ export default function Inicio() {
                   Gestiona todos los usuarios del sistema, incluyendo psicólogos y pacientes.
                 </p>
               </div>
-              <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#e7f3f3] hover:bg-[#d0e7e7] text-[#0e1b1b] text-sm font-bold leading-normal transition-colors gap-2">
+              <button 
+                onClick={handleCrear}
+                className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#e7f3f3] hover:bg-[#d0e7e7] text-[#0e1b1b] text-sm font-bold leading-normal transition-colors gap-2">
                 <Plus size={18} />
-                <span className="truncate">Agregar Psicólogo</span>
+                <span>Agregar Psicólogo</span>
               </button>
             </div>
 
@@ -119,10 +158,20 @@ export default function Inicio() {
                           </td>
                           <td className="px-4 py-4 text-right">
                             <div className="flex justify-end gap-2">
-                              <button className="p-2 text-[#4e9797] hover:text-[#0e1b1b] hover:bg-[#e7f3f3] rounded-lg transition-colors" title="Editar">
+                              {/* Botón de Editar con el evento onClick */}
+                              <button 
+                                onClick={() => handleEditar(psicologo)}
+                                className="p-2 text-[#4e9797] hover:text-[#0e1b1b] hover:bg-[#e7f3f3] rounded-lg transition-colors" 
+                                title="Editar"
+                              >
                                 <Edit2 size={18} />
                               </button>
-                              <button className="p-2 text-[#4e9797] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar">
+                              {/* Botón de Eliminar */}
+                              <button 
+                                onClick={() => handleEliminar(psicologo)}
+                                className="p-2 text-[#4e9797] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
+                                title="Eliminar"
+                              >
                                 <Trash2 size={18} />
                               </button>
                             </div>
@@ -138,6 +187,14 @@ export default function Inicio() {
           </div>
         </div>
       </div>
+      
+      {/* Modal con las nuevas props */}
+      <ModalAgregarPsicologo 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        refreshData={consultarPsicologos}
+        psicologoEditar={psicologoEditar}
+      />
     </div>
   );
 }

@@ -48,25 +48,14 @@ export default function Sidebar() {
           <Calendar className="w-5 h-5 group-hover:text-[#85C1E9] transition-colors" />
           <span className="font-medium">Citas</span>
         </Link>
-
-        <a href="#" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors group">
-          <MessageSquare className="w-5 h-5 group-hover:text-[#85C1E9] transition-colors" />
-          <span className="font-medium">Mensajes</span>
-          <span className="ml-auto bg-[#A2D9CE] text-[#2C3E50] text-xs font-bold px-2 py-0.5 rounded-full">3</span>
-        </a>
-
-        <a href="#" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors group">
-          <FileText className="w-5 h-5 group-hover:text-[#85C1E9] transition-colors" />
-          <span className="font-medium">Recursos</span>
-        </a>
       </nav>
 
       {/* Footer del Sidebar (Perfil + Config + LogOut) */}
       <div className="p-4 border-t border-white/10 dark:border-white/5 font-['Nunito_Sans']">
-        <a href="#" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors group mb-2">
+        {/* <Link to="/psicologo/configuracion" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors group mb-2">
           <Settings className="w-5 h-5 group-hover:text-[#85C1E9] transition-colors" />
           <span className="font-medium">Configuración</span>
-        </a>
+        </Link> */}
 
         {/* --- SECCIÓN PERFIL INTERACTIVA --- */}
         <div className="relative">
@@ -91,11 +80,11 @@ export default function Sidebar() {
               isProfileOpen ? 'bg-white/10 text-white' : 'hover:bg-white/5 text-white/80'
             }`}
           >
-            <img 
+            {/* <img 
               alt="Dr. Sarah Miller profile" 
               className="w-10 h-10 rounded-full object-cover border-2 border-[#A2D9CE]" 
               src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100" 
-            />
+            /> */}
             <div className="flex flex-col text-left">
               <span className="text-sm font-semibold text-white">{user?.name}</span>
               <span className="text-xs text-white/50">Psicóloga</span>

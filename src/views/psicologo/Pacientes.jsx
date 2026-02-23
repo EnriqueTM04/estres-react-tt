@@ -70,14 +70,14 @@ export default function Pacientes() {
           <p className="text-[#5D6D7E] dark:text-[#BDC3C7] mt-1">Gestione sus pacientes y monitoree su bienestar.</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="relative hidden sm:block">
+          {/* <div className="relative hidden sm:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input 
               className="pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#2C3E50] focus:ring-2 focus:ring-[#85C1E9] focus:border-transparent outline-none text-sm w-64 transition-shadow" 
               placeholder="Buscar pacientes..." 
               type="text"
             />
-          </div>
+          </div> */}
           <button className="bg-[#2C3E50] hover:bg-opacity-90 text-white px-5 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2 font-medium">
             <Plus className="w-5 h-5" />
             Nuevo Paciente
@@ -155,11 +155,11 @@ export default function Pacientes() {
                 className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer">
                   <td className="p-5">
                     <div className="flex items-center gap-4">
-                      <img 
+                      {/* <img 
                         alt="Usuario avatar" 
                         className="w-10 h-10 rounded-full object-cover" 
                         src={`https://images.unsplash.com/photo-${paciente.img === "2" ? "1438761681033-6461ffad8d80" : paciente.img === "3" ? "1500648767791-00dcc994a43e" : "1544005313-94ddf0286df2"}?auto=format&fit=crop&q=80&w=100&h=100`} 
-                      />
+                      /> */}
                       <div>
                         <h4 className="font-semibold text-[#2C3E50] dark:text-white group-hover:text-[#85C1E9] transition-colors">{paciente.user.name}</h4>
                         <p className="text-xs text-[#5D6D7E] dark:text-[#BDC3C7]">Semestre: {paciente.semestre}</p>

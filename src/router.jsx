@@ -9,6 +9,7 @@ import Landing from './views/guest/landing.jsx'
 import Pacientes from './views/psicologo/pacientes.jsx'
 import Citas from './views/psicologo/Citas.jsx'
 import Paciente from './views/psicologo/Paciente.jsx'
+import Actividad from './views/psicologo/Actividad.jsx'
 
 const router = createBrowserRouter([
     {
@@ -49,12 +50,21 @@ const router = createBrowserRouter([
             },
             {
                 path: 'pacientes/:id',
-                element: <Paciente />
+                element: <Paciente />,
+            },
+            {
+                path: 'pacientes/:id/nueva-actividad',
+                element: <Actividad />,
+            },
+            {
+                // Ruta para EDITAR una actividad existente
+                path: 'pacientes/:id/editar-actividad/:idActividad',
+                element: <Actividad />,
             },
             {
                 path: 'citas',
                 element: <Citas />
-            }
+            },
         ]
     }
 ])
