@@ -60,7 +60,7 @@ export const useAuth = ({middleware, url}) => {
             navigate('/admin/inicio')
         }
         if(middleware === 'guest' && user && user.role === 'psicologo') {
-            navigate('/psicologo/pacientes')
+            navigate('/psicologo/dashboard')
         }
         
     }, [user, error]);
