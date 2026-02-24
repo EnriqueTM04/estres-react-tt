@@ -1,11 +1,11 @@
-import {createBrowserRouter} from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import Layout from './layouts/Layout.jsx'
 import AuthLayout from './layouts/AuthLayout.jsx'
 import Inicio from './views/admin/Inicio.jsx'
 import Login from './views/Login.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
 import Landing from './views/guest/landing.jsx'
-import Pacientes from './views/psicologo/pacientes.jsx'
+import Pacientes from './views/psicologo/Pacientes.jsx'
 import Citas from './views/psicologo/Citas.jsx'
 import Paciente from './views/psicologo/Paciente.jsx'
 import Actividad from './views/psicologo/Actividad.jsx'
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/auth",
-        element: <AuthLayout/>,
+        element: <AuthLayout />,
         children: [
             {
                 path: 'login',
