@@ -6,7 +6,6 @@ const clienteAxios = axios.create({
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
     },
-    withCredentials: true
 })
 
 // Agregar token del localStorage
