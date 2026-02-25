@@ -9,7 +9,7 @@ export default function Inicio() {
   const [totalPsicologos, setTotalPsicologos] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [psicologoEditar, setPsicologoEditar] = useState(null);
-  
+
   const consultarPsicologos = async () => {
     try {
       setLoading(true);
@@ -20,7 +20,7 @@ export default function Inicio() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setPsicologos(data.data); 
+      setPsicologos(data.data);
       setTotalPsicologos(data.data.length);
     } catch (error) {
       console.error('Error al cargar psicólogos', error);
@@ -41,28 +41,28 @@ export default function Inicio() {
 
   // Función para abrir el modal en modo EDITAR
   const handleEditar = (psicologo) => {
-    setPsicologoEditar(psicologo); 
+    setPsicologoEditar(psicologo);
     setIsModalOpen(true);
   };
 
   // Función para eliminar un psicólogo
   const handleEliminar = async (psicologo) => {
-    if (window.confirm(`¿Estás seguro de eliminar a ${psicologo.user.name}?`)) {
+    if (window.confirm(`¿Estás seguro de eliminar a ${psicologo.user?.name || 'este psicólogo'}?`)) {
       try {
         const token = localStorage.getItem('AUTH_TOKEN');
         await clienteAxios.delete(`/api/psicologos/${psicologo.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        consultarPsicologos(); 
+        consultarPsicologos();
       } catch (error) {
         console.error('Error al eliminar psicólogo', error);
       }
-      
+
       consultarPsicologos();
     }
   };
 
-  if(loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#0e1b1b]"></div>
@@ -83,7 +83,7 @@ export default function Inicio() {
       <div className="flex h-full grow flex-col">
         <div className="px-4 md:px-40 flex flex-1 justify-center py-5">
           <div className="flex flex-col max-w-[960px] flex-1">
-            
+
             {/* Header de la Sección */}
             <div className="flex flex-wrap justify-between gap-3 p-4">
               <div className="flex min-w-72 flex-col gap-3">
@@ -94,7 +94,7 @@ export default function Inicio() {
                   Gestiona todos los usuarios del sistema, incluyendo psicólogos y pacientes.
                 </p>
               </div>
-              <button 
+              <button
                 onClick={handleCrear}
                 className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#e7f3f3] hover:bg-[#d0e7e7] text-[#0e1b1b] text-sm font-bold leading-normal transition-colors gap-2">
                 <Plus size={18} />
@@ -128,29 +128,28 @@ export default function Inicio() {
                       {psicologos.map((psicologo) => (
                         <tr key={psicologo.id} className="border-t border-[#d0e7e7] hover:bg-[#e7f3f3]/30 transition-colors">
                           <td className="px-4 py-4 text-[#0e1b1b] text-sm font-medium">
-                            {psicologo.user.name}
+                            {psicologo.user?.name || 'Sin nombre'}
                           </td>
                           <td className="px-4 py-4 text-[#4e9797] text-sm">
                             {psicologo.user.email}
                           </td>
                           <td className="px-4 py-4">
                             <span className="inline-flex items-center justify-center rounded-xl h-8 px-4 bg-[#e7f3f3] text-[#0e1b1b] text-sm font-medium w-full max-w-[120px]">
-                              {psicologo.user.role}
+                              {psicologo.user?.role || 'N/A'}
                             </span>
                           </td>
                           <td className="px-4 py-4">
-                            <span className={`inline-flex items-center justify-center gap-2 rounded-xl h-8 px-4 text-sm font-medium w-full max-w-[140px] border ${
-                              psicologo.user.verified 
-                                ? 'bg-[#e7f3f3] border-transparent text-[#0e1b1b]' 
+                            <span className={`inline-flex items-center justify-center gap-2 rounded-xl h-8 px-4 text-sm font-medium w-full max-w-[140px] border ${psicologo.user.verified
+                                ? 'bg-[#e7f3f3] border-transparent text-[#0e1b1b]'
                                 : 'bg-transparent border-[#d0e7e7] text-gray-500'
-                            }`}>
+                              }`}>
                               {psicologo.user.verified ? (
                                 <>
-                                  <CheckCircle size={14} className="text-green-600"/> Verificado
+                                  <CheckCircle size={14} className="text-green-600" /> Verificado
                                 </>
                               ) : (
                                 <>
-                                  <XCircle size={14} className="text-gray-400"/> Pendiente
+                                  <XCircle size={14} className="text-gray-400" /> Pendiente
                                 </>
                               )}
                             </span>
@@ -158,17 +157,17 @@ export default function Inicio() {
                           <td className="px-4 py-4 text-right">
                             <div className="flex justify-end gap-2">
                               {/* Botón de Editar con el evento onClick */}
-                              <button 
+                              <button
                                 onClick={() => handleEditar(psicologo)}
-                                className="p-2 text-[#4e9797] hover:text-[#0e1b1b] hover:bg-[#e7f3f3] rounded-lg transition-colors" 
+                                className="p-2 text-[#4e9797] hover:text-[#0e1b1b] hover:bg-[#e7f3f3] rounded-lg transition-colors"
                                 title="Editar"
                               >
                                 <Edit2 size={18} />
                               </button>
                               {/* Botón de Eliminar */}
-                              <button 
+                              <button
                                 onClick={() => handleEliminar(psicologo)}
-                                className="p-2 text-[#4e9797] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
+                                className="p-2 text-[#4e9797] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Eliminar"
                               >
                                 <Trash2 size={18} />
@@ -186,11 +185,11 @@ export default function Inicio() {
           </div>
         </div>
       </div>
-      
+
       {/* Modal con las nuevas props */}
-      <ModalAgregarPsicologo 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <ModalAgregarPsicologo
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         refreshData={consultarPsicologos}
         psicologoEditar={psicologoEditar}
       />
