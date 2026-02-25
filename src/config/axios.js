@@ -31,7 +31,7 @@ clienteAxios.interceptors.response.use((response) => {
 }, (error) => {
     if (error.response?.status === 401) {
         localStorage.removeItem('AUTH_TOKEN');
-        window.location.href = '/login';
+        window.location.href = '/auth/login';
     }
     return Promise.reject(error);
 });
