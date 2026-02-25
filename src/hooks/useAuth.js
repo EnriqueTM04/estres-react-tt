@@ -8,7 +8,7 @@ export const useAuth = ({ middleware, url }) => {
     const token = localStorage.getItem('AUTH_TOKEN')
     const navigate = useNavigate();
 
-    const { data: user, error, mutate } = useSWR('/api/user', () =>
+    const { data: user, error, mutate } = useSWR(token ? '/api/user' : null, () =>
         clienteAxios('/api/user', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -64,7 +64,7 @@ export const useAuth = ({ middleware, url }) => {
             navigate('/psicologo/dashboard')
         }
 
-    }, [user, error]);
+    }, [user, error, middleware, navigate]);
 
     return {
         login, registro, logout, user, error
