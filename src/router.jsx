@@ -11,6 +11,8 @@ import Paciente from './views/psicologo/Paciente.jsx'
 import Actividad from './views/psicologo/Actividad.jsx'
 import { CitasProvider } from './context/CitasProvider.jsx'
 import Dashboard from './views/psicologo/Dashboard.jsx'
+import ResetPassword from './views/ResetPassword.jsx'
+import Olvide from './views/Olvide.jsx'
 
 const router = createBrowserRouter([
     {
@@ -25,6 +27,14 @@ const router = createBrowserRouter([
                 path: 'login',
                 element: <Login />
             },
+            {
+                path: 'olvide-password',
+                element: <Olvide />
+            },
+            {
+                path: 'reset-password',
+                element: <ResetPassword />
+            }
         ]
     },
     {

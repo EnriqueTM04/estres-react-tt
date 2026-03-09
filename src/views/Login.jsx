@@ -128,9 +128,9 @@ export default function Login() {
                 <label className="text-sm font-semibold text-[#2C3E50] dark:text-gray-300" htmlFor="password">
                   Contraseña
                 </label>
-                <a href="#" className="text-xs font-semibold text-[#85C1E9] hover:text-[#2C3E50] dark:hover:text-[#A2D9CE] transition-colors">
+                <Link to="/auth/olvide-password" className="text-xs font-semibold text-[#85C1E9] hover:text-[#2C3E50] dark:hover:text-[#A2D9CE] transition-colors">
                   ¿Olvidaste tu contraseña?
-                </a>
+                </Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
