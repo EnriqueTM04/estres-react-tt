@@ -3,27 +3,28 @@ import { use, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
 
-export const useAuth = ({middleware, url}) => {
+export const useAuth = ({ middleware, url }) => {
 
     const token = localStorage.getItem('AUTH_TOKEN')
     const navigate = useNavigate();
 
-    const { data: user, error, mutate } = useSWR('/api/user', () =>
+    const { data: user, error, mutate } = useSWR(token ? '/api/user' : null, () =>
         clienteAxios('/api/user', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
-        .then(res => res.data)
-        .catch(error => {
-            throw Error(error?.response?.data?.errors)
-        })
+            .then(res => res.data)
+            .catch(error => {
+                throw Error(error?.response?.data?.errors)
+            })
     )
 
     const login = async (datos, setErrores) => {
         try {
             const { data } = await clienteAxios.post('/api/login', datos);
             localStorage.setItem('AUTH_TOKEN', data.token);
+            clienteAxios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
             setErrores([]);
             await mutate();
         } catch (error) {
@@ -39,8 +40,8 @@ export const useAuth = ({middleware, url}) => {
         try {
             await clienteAxios.post('/api/logout', null, {
                 headers: {
-                Authorization: `Bearer ${token}`
-            }
+                    Authorization: `Bearer ${token}`
+                }
             })
             localStorage.removeItem('AUTH_TOKEN');
             await mutate(undefined);
@@ -53,17 +54,17 @@ export const useAuth = ({middleware, url}) => {
     console.log(error)
 
     useEffect(() => {
-        if(middleware === 'auth' && error) {
+        if (middleware === 'auth' && error) {
             navigate('/auth/login')
         }
-        if(middleware === 'guest' && user && user.role === 'admin') {
+        if (middleware === 'guest' && user && user.role === 'admin') {
             navigate('/admin/inicio')
         }
-        if(middleware === 'guest' && user && user.role === 'psicologo') {
+        if (middleware === 'guest' && user && user.role === 'psicologo') {
             navigate('/psicologo/dashboard')
         }
-        
-    }, [user, error]);
+
+    }, [user, error, middleware, navigate]);
 
     return {
         login, registro, logout, user, error

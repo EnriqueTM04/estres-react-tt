@@ -17,15 +17,15 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
   useEffect(() => {
     if (psicologoEditar) {
       setFormData({
-        name: psicologoEditar.user.name,
+        name: psicologoEditar?.user?.name || '',
         email: psicologoEditar.user.email,
-        password: '', 
+        password: '',
         password_confirmation: ''
       });
     } else {
       setFormData({ name: '', email: '', password: '', password_confirmation: '' });
     }
-    setError(''); 
+    setError('');
   }, [psicologoEditar, isOpen]);
 
   if (!isOpen) return null;
@@ -66,16 +66,16 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
       } else {
         await clienteAxios.post('/api/psicologos', dataToSend, config);
       }
-      
-      refreshData(); 
-      onClose();     
+
+      refreshData();
+      onClose();
     } catch (err) {
       if (err.response?.data?.message) {
-        setError(err.response?.data?.errors ? 
+        setError(err.response?.data?.errors ?
           <div className="whitespace-pre-wrap">{Object.values(err.response.data.errors).flat().join('\n')}</div>
           : 'Error al procesar la solicitud'
         );
-      } 
+      }
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="w-full max-w-[500px] overflow-hidden rounded-xl border border-[#d0e7e7] bg-white shadow-2xl animate-in fade-in zoom-in duration-200">
-        
+
         {/* Header del Modal Dinámico */}
         <div className="flex items-center justify-between border-b border-[#d0e7e7] bg-[#f8fcfc] p-4">
           <h3 className="text-lg font-bold text-[#0e1b1b]">

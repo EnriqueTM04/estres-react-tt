@@ -30,8 +30,8 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
   if (!isOpen || !cita) return null;
 
   const HORAS_DISPONIBLES = [
-    '09:00','10:00','11:00','12:00','13:00',
-    '14:00','15:00','16:00','17:00'
+    '09:00', '10:00', '11:00', '12:00', '13:00',
+    '14:00', '15:00', '16:00', '17:00'
   ];
 
   const handleSave = async (id) => {
@@ -99,7 +99,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
                 Editar Cita
               </h3>
               <p className="text-sm text-gray-500">
-                {cita.paciente.user.name}
+                {cita.paciente?.user?.name || 'Sin nombre'}
               </p>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-700">
