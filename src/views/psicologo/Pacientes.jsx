@@ -65,7 +65,9 @@ export default function Pacientes() {
   };
 
   if (isLoading) {
-    return <div className="p-10 text-[#2C3E50] dark:text-white">Cargando...</div>
+    <div className="flex-1 md:ml-64 p-6 lg:p-10 transition-all duration-300 font-['Nunito_Sans']">
+      <p className="text-center text-gray-500 dark:text-gray-400">Cargando pacientes...</p>
+    </div>
   }
 
   let estresAlto = 0;

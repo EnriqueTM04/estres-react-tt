@@ -33,7 +33,11 @@ const Dashboard = () => {
     fetchMetricas();
   }, [navigate]);
 
-  if (loading) return <div className="p-10 text-center text-[#2C3E50] dark:text-white">Cargando métricas...</div>;
+  if (loading) return (
+    <div className="flex-1 md:ml-64 p-6 lg:p-10 transition-all duration-300 font-['Nunito_Sans']">
+      <p className="text-center text-gray-500 dark:text-gray-400">Cargando información...</p>
+    </div>
+  );
   if (!metricas) return <div className="p-10 text-center text-red-500">Error al cargar datos.</div>;
 
   // Cálculos para porcentajes de estrés

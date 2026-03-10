@@ -13,6 +13,7 @@ import { CitasProvider } from './context/CitasProvider.jsx'
 import Dashboard from './views/psicologo/Dashboard.jsx'
 import ResetPassword from './views/ResetPassword.jsx'
 import Olvide from './views/Olvide.jsx'
+import { PacienteProvider } from './context/PacienteProvider.jsx'
 
 const router = createBrowserRouter([
     {
@@ -61,7 +62,7 @@ const router = createBrowserRouter([
             },
             {
                 path: 'pacientes/:id',
-                element: <Paciente />,
+                element: <PacienteProvider><Paciente /></PacienteProvider>,
             },
             {
                 path: 'pacientes/:id/nueva-actividad',
