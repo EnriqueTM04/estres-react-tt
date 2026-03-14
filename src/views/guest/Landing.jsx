@@ -64,7 +64,7 @@ export default function Landing() {
                     Transformando el Estrés en Serenidad
                   </h1>
                   <h2 className="text-white text-sm md:text-base font-medium leading-relaxed opacity-90">
-                    SereneMind es la plataforma integral para terapeutas que buscan optimizar el seguimiento del progreso de sus pacientes y ofrecer recursos efectivos para la reducción del estrés.
+                    VidaZen es la plataforma integral para terapeutas que buscan optimizar el seguimiento del progreso de sus pacientes y ofrecer recursos efectivos para la reducción del estrés.
                   </h2>
                 </div>
                 
@@ -83,7 +83,7 @@ export default function Landing() {
                   Herramientas Clave para el Éxito Terapéutico
                 </h1>
                 <p className="text-[#0e1b1b] text-base font-normal max-w-[720px]">
-                  SereneMind ofrece un conjunto de herramientas diseñadas para mejorar la eficacia de tus sesiones y el bienestar de tus pacientes.
+                  VidaZen ofrece un conjunto de herramientas diseñadas para mejorar la eficacia de tus sesiones y el bienestar de tus pacientes.
                 </p>
               </div>
 
