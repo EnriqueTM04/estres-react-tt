@@ -14,11 +14,16 @@ import Dashboard from './views/psicologo/Dashboard.jsx'
 import ResetPassword from './views/ResetPassword.jsx'
 import Olvide from './views/Olvide.jsx'
 import { PacienteProvider } from './context/PacienteProvider.jsx'
+import ConfirmarCuenta from './views/guest/ConfirmarCuenta.jsx'
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <Landing />
+    },
+    {
+        path: "/cuenta-confirmada",
+        element: <ConfirmarCuenta />
     },
     {
         path: "/auth",

@@ -120,7 +120,7 @@ export default function Inicio() {
                         <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[25%]">Nombre</th>
                         <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[30%]">Correo Electrónico</th>
                         <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[15%]">Rol</th>
-                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[15%]">Estado</th>
+                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[15%]">Correo confirmado</th>
                         <th className="px-4 py-4 text-right text-[#4e9797] text-sm font-bold leading-normal w-[15%]">Acciones</th>
                       </tr>
                     </thead>
@@ -143,7 +143,7 @@ export default function Inicio() {
                                 ? 'bg-[#e7f3f3] border-transparent text-[#0e1b1b]'
                                 : 'bg-transparent border-[#d0e7e7] text-gray-500'
                               }`}>
-                              {psicologo.user.verified ? (
+                              {psicologo.user.email_verified_at ? (
                                 <>
                                   <CheckCircle size={14} className="text-green-600" /> Verificado
                                 </>
