@@ -15,6 +15,7 @@ import ResetPassword from './views/ResetPassword.jsx'
 import Olvide from './views/Olvide.jsx'
 import { PacienteProvider } from './context/PacienteProvider.jsx'
 import ConfirmarCuenta from './views/guest/ConfirmarCuenta.jsx'
+import ConfirmarCuentaPaciente from './views/guest/ConfirmarCuentaPaciente.jsx'
 
 const router = createBrowserRouter([
     {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
     {
         path: "/cuenta-confirmada",
         element: <ConfirmarCuenta />
+    },
+    {
+        path: "/cuenta-confirmada-paciente",
+        element: <ConfirmarCuentaPaciente />
     },
     {
         path: "/auth",

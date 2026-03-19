@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom';
 import logo from "../../assets/Isotipo-Logo Final-04.svg";
 import { CheckCircle2, ArrowRight, Shield, User } from 'lucide-react';
 
-export default function ConfirmarCuenta() {
+export default function ConfirmarCuentaPaciente() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 transition-colors duration-300 font-sans">
       <style>
@@ -11,7 +10,7 @@ export default function ConfirmarCuenta() {
         `}
       </style>
 
-      {/* Fondo decorativo global */}
+      {/* Fondo decorativo global  */}
       <div className="fixed top-0 left-0 -z-10 w-full h-full pointer-events-none overflow-hidden opacity-40">
         <div className="absolute top-[5%] left-[10%] w-[500px] h-[500px] bg-[#A2D9CE]/30 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[5%] right-[10%] w-[500px] h-[500px] bg-[#85C1E9]/30 rounded-full blur-[120px]"></div>
@@ -40,30 +39,17 @@ export default function ConfirmarCuenta() {
         </h2>
         
         <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-8">
-          Hola Colega, tu registro como profesional de la salud mental en <span className="font-semibold text-[#85C1E9]">Vidazen</span> ha sido confirmado. Ya puedes acceder a tu panel de pacientes.
+          Hola Colega, tu registro esta completo en <span className="font-semibold text-[#85C1E9]">Vidazen</span> ha sido confirmado. Ya puedes acceder a la aplicación para iniciar sesión.
         </p>
 
         {/* Info Card pequeña */}
         <div className="bg-[#FBFCFC] dark:bg-gray-800 rounded-2xl p-4 mb-8 flex items-center justify-center gap-6 border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-2 text-sm text-[#2C3E50] dark:text-gray-300 font-medium">
-            <User className="w-4 h-4 text-[#85C1E9]" />
-            Rol: Psicólogo
-          </div>
           <div className="w-px h-8 bg-gray-200 dark:bg-gray-700"></div>
           <div className="flex items-center gap-2 text-sm text-[#2C3E50] dark:text-gray-300 font-medium">
             <Shield className="w-4 h-4 text-[#A2D9CE]" />
             Acceso Seguro
           </div>
         </div>
-
-        {/* Botón de Acción */}
-        <Link 
-          to="/auth/login"
-          className="group relative inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-[#2C3E50] text-white font-['Montserrat'] font-bold rounded-xl hover:bg-[#2C3E50]/90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-[#2C3E50]/20 gap-3"
-        >
-          Ir a mi consultorio virtual
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </Link>
       </div>
     </div>
   )
