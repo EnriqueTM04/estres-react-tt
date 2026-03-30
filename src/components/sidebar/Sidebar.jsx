@@ -47,7 +47,7 @@ export default function Sidebar() {
           <LayoutDashboard className={`w-5 h-5 transition-colors ${
             isActive('/psicologo/dashboard') ? 'text-[#A2D9CE]' : 'group-hover:text-[#85C1E9]'
           }`} />
-          <span className="font-medium">Dashboard</span>
+          <span className="font-medium">Panel Principal</span>
         </Link>
 
         {/* --- Pacientes --- */}
