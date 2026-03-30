@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, User, Mail, Lock } from 'lucide-react';
+import { X, Save, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import clienteAxios from '../../config/axios';
 
 export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, psicologoEditar }) {
@@ -11,8 +11,12 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
 
   const isEditing = !!psicologoEditar;
+  const passwordRequirementsText =
+    'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&.).';
 
   useEffect(() => {
     if (psicologoEditar) {
@@ -26,6 +30,8 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
       setFormData({ name: '', email: '', password: '', password_confirmation: '' });
     }
     setError('');
+    setShowPassword(false);
+    setShowPasswordConfirmation(false);
   }, [psicologoEditar, isOpen]);
 
   if (!isOpen) return null;
@@ -40,6 +46,22 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    const shouldValidatePassword = !isEditing || formData.password;
+
+    if (shouldValidatePassword) {
+      const password = formData.password;
+      const hasValidLength = password.length >= 8;
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecial = /[@$!%*?&.]/.test(password);
+
+      if (!(hasValidLength && hasUppercase && hasLowercase && hasNumber && hasSpecial)) {
+        setError(passwordRequirementsText);
+        return;
+      }
+    }
 
     // Si estamos creando, o si estamos editando Y escribieron una contraseña, validamos
     if ((!isEditing || formData.password) && formData.password !== formData.password_confirmation) {
@@ -147,13 +169,25 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4e9797]" size={18} />
                 <input
                   required={!isEditing}
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-[#d0e7e7] bg-[#f8fcfc] py-2 pl-10 pr-4 text-[#0e1b1b] focus:outline-none focus:ring-2 focus:ring-[#4e9797]/20 transition-all"
+                  placeholder="Ej. Abcd1234@"
+                  className="w-full rounded-xl border border-[#d0e7e7] bg-[#f8fcfc] py-2 pl-10 pr-10 text-[#0e1b1b] focus:outline-none focus:ring-2 focus:ring-[#4e9797]/20 transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4e9797] hover:text-[#0e1b1b] transition-colors"
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
+              <p className="text-xs text-[#4f6a6a] mt-1 leading-relaxed">
+                {passwordRequirementsText}
+              </p>
             </div>
 
             {/* Confirmar Contraseña */}
@@ -163,12 +197,20 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4e9797]" size={18} />
                 <input
                   required={!isEditing}
-                  type="password"
+                  type={showPasswordConfirmation ? 'text' : 'password'}
                   name="password_confirmation"
                   value={formData.password_confirmation}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-[#d0e7e7] bg-[#f8fcfc] py-2 pl-10 pr-4 text-[#0e1b1b] focus:outline-none focus:ring-2 focus:ring-[#4e9797]/20 transition-all"
+                  className="w-full rounded-xl border border-[#d0e7e7] bg-[#f8fcfc] py-2 pl-10 pr-10 text-[#0e1b1b] focus:outline-none focus:ring-2 focus:ring-[#4e9797]/20 transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordConfirmation((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4e9797] hover:text-[#0e1b1b] transition-colors"
+                  aria-label={showPasswordConfirmation ? 'Ocultar confirmación de contraseña' : 'Mostrar confirmación de contraseña'}
+                >
+                  {showPasswordConfirmation ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
           </div>
