@@ -10,11 +10,13 @@ import {
   Activity, 
   AtSign, 
   Lock, 
-  ArrowRight 
+  ArrowRight,
+  Loader
 } from 'lucide-react';
 
 export default function Login() {
 
+  const [cargando, setCargando] = useState(false)
   const emailRef = createRef()
   const passwordRef = createRef()
 
@@ -26,13 +28,22 @@ export default function Login() {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setCargando(true);
 
     const datos = {
       email: emailRef.current.value,
       password: passwordRef.current.value
     }
 
-    login(datos, setErrores)
+    try {
+      await login(datos, setErrores)
+    }
+    catch (error) {
+      setErrores(['Error de conexión. Por favor, inténtalo de nuevo.'])
+    }
+    finally {
+      setCargando(false);
+    }
     
   }
 
@@ -146,23 +157,22 @@ export default function Login() {
               </div>
             </div>
 
-            {/* <div className="flex items-center gap-2">
-              <input 
-                id="remember" 
-                type="checkbox" 
-                className="w-4 h-4 rounded border-gray-300 text-[#85C1E9] focus:ring-[#85C1E9] bg-gray-100 dark:bg-gray-800"
-              />
-              <label className="text-sm text-gray-500 dark:text-gray-400" htmlFor="remember">
-                Mantener sesión iniciada
-              </label>
-            </div> */}
-
             <button 
               type="submit"
-              className="cursor-pointer w-full py-4 bg-[#2C3E50] text-white font-['Montserrat'] font-bold rounded-xl hover:bg-[#2C3E50]/90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-[#2C3E50]/20 flex items-center justify-center gap-2"
+              disabled={cargando} 
+              className={`cursor-pointer w-full py-4 bg-[#2C3E50] text-white font-['Montserrat'] font-bold rounded-xl hover:bg-[#2C3E50]/90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-[#2C3E50]/20 flex items-center justify-center gap-2 ${cargando ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              Iniciar sesión
-              <ArrowRight className="w-5 h-5" />
+              {cargando ? (
+                <>
+                  <Loader className="w-5 h-5 animate-spin" />
+                  Cargando...
+                </>
+              ) : (
+                <>
+                  Iniciar sesión
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
             </button>
           </form>
 
