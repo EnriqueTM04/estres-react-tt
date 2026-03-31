@@ -180,7 +180,7 @@ export default function ResetPassword() {
                   type="submit"
                   className="cursor-pointer w-full py-4 bg-[#2C3E50] text-white font-['Montserrat'] font-bold rounded-xl hover:bg-[#2C3E50]/90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-[#2C3E50]/20 flex items-center justify-center gap-2 mt-4"
                 >
-                  Guardar y entrar
+                  Guardar contraseña
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </form>
