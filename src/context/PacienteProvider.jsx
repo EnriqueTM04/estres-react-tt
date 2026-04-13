@@ -9,7 +9,7 @@ const PacienteProvider = ({ children }) => {
     // SECCION PDF
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-    const formarPDF = async(datosParaPDF) => {
+    const formarPDF = async (datosParaPDF) => {
         const { id, perfil, stats, modulos } = datosParaPDF;
         try {
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -21,12 +21,12 @@ const PacienteProvider = ({ children }) => {
             // --- 1. ENCABEZADO ESTILO BANNER ---
             doc.setFillColor(44, 62, 80); // Azul oscuro (#2C3E50)
             doc.rect(0, 0, pageWidth, 40, 'F');
-            
+
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(20);
             doc.setFont('helvetica', 'bold');
             doc.text('REPORTE DE SEGUIMIENTO PSICOLÓGICO', margin, 22);
-            
+
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             doc.text(`ID de Control: ${id}`, margin, 30);
@@ -38,7 +38,7 @@ const PacienteProvider = ({ children }) => {
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
             doc.text('Información del Paciente', margin, currentY);
-            
+
             currentY += 4;
             doc.setDrawColor(133, 193, 233); // Azul claro (#85C1E9)
             doc.setLineWidth(0.8);
@@ -46,7 +46,7 @@ const PacienteProvider = ({ children }) => {
 
             currentY += 10;
             doc.setFontSize(11);
-            
+
             // Columna 1
             doc.setFont('helvetica', 'bold');
             doc.text('Nombre:', margin, currentY);
@@ -74,9 +74,9 @@ const PacienteProvider = ({ children }) => {
             currentY += 20;
             doc.setFillColor(245, 247, 250);
             doc.roundedRect(margin, currentY, pageWidth - (margin * 2), 25, 3, 3, 'F');
-            
+
             const colWidth = (pageWidth - (margin * 2)) / 3;
-            
+
             // Nivel de Estrés
             doc.setFontSize(9);
             doc.setTextColor(100, 100, 100);
@@ -110,7 +110,7 @@ const PacienteProvider = ({ children }) => {
             currentY += 40;
             doc.setFontSize(14);
             doc.text('Avance de Módulos', margin, currentY);
-            
+
             currentY += 6;
             // Cabecera Tabla
             doc.setFillColor(133, 193, 233);
@@ -126,76 +126,77 @@ const PacienteProvider = ({ children }) => {
             doc.setFont('helvetica', 'normal');
 
             modulos.forEach((modulo, index) => {
-            // Filas con color alterno
-            if (index % 2 === 0) {
-                doc.setFillColor(249, 251, 253);
-                doc.rect(margin, currentY, pageWidth - (margin * 2), 10, 'F');
-            }
-            
-            doc.text(modulo.nombre, margin + 5, currentY + 6.5);
-            doc.text(modulo.estado.charAt(0).toUpperCase() + modulo.estado.slice(1), margin + 90, currentY + 6.5);
-            doc.text(`${modulo.progreso}%`, margin + 140, currentY + 6.5);
-            
-            doc.setDrawColor(240, 240, 240);
-            doc.line(margin, currentY + 10, pageWidth - margin, currentY + 10);
-            currentY += 10;
+                // Filas con color alterno
+                if (index % 2 === 0) {
+                    doc.setFillColor(249, 251, 253);
+                    doc.rect(margin, currentY, pageWidth - (margin * 2), 10, 'F');
+                }
+
+                doc.text(modulo.nombre, margin + 5, currentY + 6.5);
+                doc.text(modulo.estado.charAt(0).toUpperCase() + modulo.estado.slice(1), margin + 90, currentY + 6.5);
+                doc.text(`${modulo.progreso}%`, margin + 140, currentY + 6.5);
+
+                doc.setDrawColor(240, 240, 240);
+                doc.line(margin, currentY + 10, pageWidth - margin, currentY + 10);
+                currentY += 10;
             });
 
             // --- 5. GRÁFICO DE ESTRÉS ---
             const chartCanvas = document.querySelector('canvas');
             if (chartCanvas) {
-            if (currentY + 80 > pageHeight) {
-                doc.addPage();
-                currentY = 20;
-            } else {
-                currentY += 15;
-            }
+                if (currentY + 80 > pageHeight) {
+                    doc.addPage();
+                    currentY = 20;
+                } else {
+                    currentY += 15;
+                }
 
-            doc.setFontSize(14);
-            doc.setTextColor(44, 62, 80);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Análisis Evolutivo de Estrés', margin, currentY);
-            
-            const chartImg = chartCanvas.toDataURL('image/png', 1.0);
-            // Centramos el gráfico
-            doc.addImage(chartImg, 'PNG', margin, currentY + 5, pageWidth - (margin * 2), 65);
+                doc.setFontSize(14);
+                doc.setTextColor(44, 62, 80);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Análisis Evolutivo de Estrés', margin, currentY);
+
+                const chartImg = chartCanvas.toDataURL('image/png', 1.0);
+                // Centramos el gráfico
+                doc.addImage(chartImg, 'PNG', margin, currentY + 5, pageWidth - (margin * 2), 65);
             }
 
             // --- PIE DE PÁGINA ---
             const pageCount = doc.internal.getNumberOfPages();
             for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setTextColor(170, 170, 170);
-            doc.text(
-                `Este reporte es un documento informativo generado por la plataforma. Página ${i} de ${pageCount}`,
-                pageWidth / 2, 
-                pageHeight - 10, 
-                { align: 'center' }
-            );
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(170, 170, 170);
+                doc.text(
+                    `Este reporte es un documento informativo generado por la plataforma. Página ${i} de ${pageCount}`,
+                    pageWidth / 2,
+                    pageHeight - 10,
+                    { align: 'center' }
+                );
             }
 
             doc.save(`Reporte_Paciente_${perfil.nombre.replace(/\s+/g, '_')}.pdf`);
+            alert('Reporte generado exitosamente.');
 
         } catch (err) {
             console.error('Error al generar el PDF:', err);
-            alert('Hubo un error al generar el PDF. Revisa la consola.');
+            alert('Hubo un error. Inténtelo más tarde.');
         } finally {
             setIsGeneratingPDF(false);
         }
     }
 
-  return (
-    <PacienteContext.Provider
-      value={{
-            formarPDF,
-            isGeneratingPDF,
-            setIsGeneratingPDF
-      }}
-    >
-      {children}
-    </PacienteContext.Provider>
-  );
+    return (
+        <PacienteContext.Provider
+            value={{
+                formarPDF,
+                isGeneratingPDF,
+                setIsGeneratingPDF
+            }}
+        >
+            {children}
+        </PacienteContext.Provider>
+    );
 };
 
 export { PacienteProvider };

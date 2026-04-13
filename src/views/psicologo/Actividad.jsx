@@ -215,7 +215,7 @@ export default function Actividad() {
   };
 
   const handleDelete = () => {
-    if (!confirm('¿Eliminar esta actividad?')) return;
+    if (!confirm('¿Está seguro de eliminar este registro? Esta acción no se puede deshacer.')) return;
     try {
       const token = localStorage.getItem('AUTH_TOKEN');
       clienteAxios.delete(`/api/actividades/${idActividad}`, {
