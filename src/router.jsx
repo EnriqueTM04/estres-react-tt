@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import Layout from './layouts/Layout.jsx'
 import AuthLayout from './layouts/AuthLayout.jsx'
 import Inicio from './views/admin/Inicio.jsx'
@@ -16,11 +16,16 @@ import Olvide from './views/Olvide.jsx'
 import { PacienteProvider } from './context/PacienteProvider.jsx'
 import ConfirmarCuenta from './views/guest/ConfirmarCuenta.jsx'
 import ConfirmarCuentaPaciente from './views/guest/ConfirmarCuentaPaciente.jsx'
+import ApkDownload from './views/guest/ApkDownload.jsx'
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <Landing />
+    },
+    {
+        path: '/descargar-app',
+        element: <ApkDownload />
     },
     {
         path: "/cuenta-confirmada",

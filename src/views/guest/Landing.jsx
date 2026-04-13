@@ -1,18 +1,18 @@
 import React from 'react';
-import { 
-  Presentation, 
-  ClipboardList, 
-  Medal, 
-  FileText, 
-  ArrowRight 
+import {
+  Presentation,
+  ClipboardList,
+  Medal,
+  FileText,
+  ArrowRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Landing() {
 
-  useAuth({middleware: 'guest'});
-  
+  useAuth({ middleware: 'guest' });
+
   // Datos para las tarjetas de herramientas
   const features = [
     {
@@ -48,12 +48,12 @@ export default function Landing() {
       </style>
 
       <div className="flex flex-col h-full grow">
-        
+
         {/* --- HERO SECTION --- */}
         <div className="flex flex-1 justify-center py-5 px-4 md:px-40">
           <div className="flex flex-col max-w-[960px] flex-1">
             <div className="p-4">
-              <div 
+              <div
                 className="flex min-h-[480px] flex-col gap-6 rounded-xl bg-cover bg-center bg-no-repeat items-center justify-center p-8 text-center md:gap-8"
                 style={{
                   backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%), url("https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1999&auto=format&fit=crop")'
@@ -67,10 +67,13 @@ export default function Landing() {
                     VidaZen es la plataforma integral para terapeutas que buscan optimizar el seguimiento del progreso de sus pacientes y ofrecer recursos efectivos para la reducción del estrés.
                   </h2>
                 </div>
-                
-                <div className="flex flex-wrap gap-3 justify-center mt-4">
+
+                <div className="mt-4 flex flex-col items-center gap-3">
                   <Link to="/auth/login" className="flex items-center justify-center rounded-xl h-10 px-6 bg-[#e7f3f3] hover:bg-[#d5eaea] text-[#0e1b1b] text-sm font-bold transition-transform active:scale-95 md:h-12 md:text-base">
-                    Iniciar Sesión
+                    ¿Eres psicólogo/administrador? Inicia aquí
+                  </Link>
+                  <Link to="/descargar-app" className="flex items-center justify-center rounded-xl h-10 px-6 border border-[#d0e7e7] bg-white/95 hover:bg-white text-[#0e1b1b] text-sm font-bold transition-transform active:scale-95 md:h-12 md:text-base">
+                    ¿Eres estudiante? Inicia aquí
                   </Link>
                 </div>
               </div>
