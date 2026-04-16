@@ -3,8 +3,6 @@ import clienteAxios from '../../config/axios';
 import {
   X,
   Calendar,
-  Video,
-  Armchair,
   Trash2
 } from 'lucide-react';
 
@@ -13,7 +11,6 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
   // Hooks
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('09:00');
-  const [modalidad, setModalidad] = useState('');
   const [notas, setNotas] = useState('');
 
   // Sincronizar cuando cambia la cita
@@ -21,9 +18,8 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
     if (!cita) return;
 
     setFecha(cita.fecha);
-    setHora(cita.hora.slice(0, 5)); // HH:mm
-    setModalidad(cita.tipo_sesion);
-    setNotas(cita.notas ?? '');
+    setHora((cita.hora ?? '09:00').slice(0, 5)); // HH:mm
+    setNotas(cita.observaciones ?? '');
   }, [cita]);
 
   // Early return DESPUÉS de hooks
@@ -43,7 +39,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
         {
           fecha,
           hora,
-          modalidad,
+          modalidad: 'presencial',
           notas,
         },
         {
@@ -90,7 +86,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
 
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <div className="relative w-full max-w-lg rounded-xl bg-white dark:bg-[#2C3E50] shadow-xl border border-gray-200 dark:border-gray-700 font-['Nunito_Sans'] overflow-hidden">
-          
+
           {/* HEADER */}
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-start bg-white dark:bg-[#2C3E50]">
             <div>
@@ -98,7 +94,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
                 Editar Cita
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {cita.paciente?.user?.name || 'Sin nombre'}
+                {cita.paciente?.name || 'Sin nombre'}
               </p>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
@@ -140,34 +136,12 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
               </select>
             </div>
 
-            {/* Modalidad */}
             <div>
               <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">
                 Modalidad
               </label>
-              <div className="flex rounded-lg bg-gray-100 dark:bg-[#2C3E50] p-1 border border-gray-200 dark:border-gray-600">
-                <button
-                  onClick={() => setModalidad('virtual')}
-                  className={`flex-1 py-2 rounded-md flex items-center justify-center gap-2 text-sm font-medium transition-all
-                    ${modalidad === 'virtual'
-                      ? 'bg-white dark:bg-[#85C1E9] shadow font-bold text-teal-700 dark:text-[#2C3E50]'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                    }`}
-                >
-                  <Video className="w-4 h-4" />
-                  En línea
-                </button>
-                <button
-                  onClick={() => setModalidad('presencial')}
-                  className={`flex-1 py-2 rounded-md flex items-center justify-center gap-2 text-sm font-medium transition-all
-                    ${modalidad === 'presencial'
-                      ? 'bg-white dark:bg-[#85C1E9] shadow font-bold text-teal-700 dark:text-[#2C3E50]'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                    }`}
-                >
-                  <Armchair className="w-4 h-4" />
-                  Presencial
-                </button>
+              <div className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#2C3E50] px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                Presencial
               </div>
             </div>
 

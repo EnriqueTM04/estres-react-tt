@@ -10,11 +10,11 @@ dayjs.extend(isoWeek);
 dayjs.extend(weekday);
 dayjs.locale('es');
 
-import { 
-  TrendingUp, 
-  Calendar, 
-  ChevronLeft, 
-  ChevronRight, 
+import {
+  TrendingUp,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 export default function Citas() {
@@ -29,7 +29,7 @@ export default function Citas() {
     selectedCita,
     obtenerCitasPorSemana
   } = useCitas();
-  
+
   const horas = [
     '08:00',
     '09:00',
@@ -48,8 +48,8 @@ export default function Citas() {
 
   return (
     <div className="flex-1 md:ml-64 p-6 lg:p-10 transition-all duration-300 font-['Nunito_Sans']">
-       {/* Inyección de fuente específica para esta vista */}
-       <style>
+      {/* Inyección de fuente específica para esta vista */}
+      <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap');
           .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -84,10 +84,10 @@ export default function Citas() {
 
       {/* --- MAIN CONTENT GRID --- */}
       <div className="flex flex-col lg:flex-row gap-8 h-full">
-        
+
         {/* CALENDAR GRID (Left Side) */}
         <div className="flex-1 bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          
+
           {/* Calendar Controls */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
@@ -124,7 +124,7 @@ export default function Citas() {
           <div className="space-y-4 overflow-y-auto max-h-[600px] hide-scrollbar pr-2 relative">
             {horas.map(hora => (
               <div key={hora} className="grid grid-cols-6 gap-4 min-h-[80px]">
-                
+
                 {/* Hora */}
                 <div className="text-xs text-gray-400 text-center pt-2">
                   {dayjs(`2026-01-01 ${hora}`).format('hh:mm A')}
@@ -132,43 +132,39 @@ export default function Citas() {
 
                 {/* Lunes a Viernes */}
                 {daysOfWeek.map(day => {
-                const cita = getCita(day, hora);
+                  const cita = getCita(day, hora);
 
-                // Celda vacía
-                if (!cita) {
+                  // Celda vacía
+                  if (!cita) {
+                    return (
+                      <div
+                        key={day.format('YYYY-MM-DD')}
+                        className="rounded-lg bg-transparent"
+                      />
+                    );
+                  }
+
+                  // Celda con cita
                   return (
                     <div
-                      key={day.format('YYYY-MM-DD')}
-                      className="rounded-lg bg-transparent"
-                    />
+                      key={cita.id ?? `${day.format('YYYY-MM-DD')}-${hora}`}
+                      onClick={() => {
+                        setSelectedCita(cita);
+                        setIsEditModalOpen(true);
+                      }}
+                      className="p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow bg-[#A2D9CE]/20 border-l-4 border-[#A2D9CE]"
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <p className="text-xs font-bold truncate">
+                        {cita.paciente?.name ?? 'Paciente'}
+                      </p>
+                      <span className="inline-block mt-1 text-[10px] font-semibold">
+                        Presencial
+                      </span>
+                    </div>
                   );
-                }
-
-                // Celda con cita
-                return (
-                  <div
-                    key={cita.id ?? `${day.format('YYYY-MM-DD')}-${hora}`}
-                    onClick={() => {
-                      setSelectedCita(cita);
-                      setIsEditModalOpen(true);
-                    }}
-                    className={`p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow
-                      ${cita.tipo_sesion === 'seguimiento'
-                        ? 'bg-[#85C1E9]/20 border-l-4 border-[#85C1E9]'
-                        : 'bg-[#A2D9CE]/20 border-l-4 border-[#A2D9CE]'
-                      }`}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <p className="text-xs font-bold truncate">
-                      {cita.paciente?.user?.name ?? 'Paciente'}
-                    </p>
-                    <span className="inline-block mt-1 text-[10px] font-semibold">
-                      {cita.tipo_sesion}
-                    </span>
-                  </div>
-                );
-              })}
+                })}
 
               </div>
             ))}
