@@ -4,6 +4,12 @@ import dayjs from "dayjs";
 
 const CitasContext = createContext();
 
+const normalizarCitas = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
+
 const CitasProvider = ({ children }) => {
 
   const [currentWeek, setCurrentWeek] = useState(dayjs().startOf('isoWeek'));
@@ -15,13 +21,14 @@ const CitasProvider = ({ children }) => {
   const obtenerCitasPorSemana = async (week) => {
     const token = localStorage.getItem('AUTH_TOKEN');
     try {
-      const {data} = await clienteAxios(`/api/sesiones?week=${week}`, {
-          headers: {
-              Authorization: `Bearer ${token}`
-          }
+      const { data } = await clienteAxios(`/api/sesiones?week=${week}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
-      setCitas(data);
+      setCitas(normalizarCitas(data));
     } catch (error) {
+      setCitas([]);
       console.error('Error al traer citas', error);
     }
   };

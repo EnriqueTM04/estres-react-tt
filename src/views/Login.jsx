@@ -43,7 +43,8 @@ export default function Login() {
       await login(datos, setErrores)
     }
     catch (error) {
-      setErrores(['Error de conexión. Por favor, inténtalo de nuevo.'])
+      const errorMessage = error?.response?.data?.message || error?.message || 'Error de conexión. Por favor, inténtalo de nuevo.'
+      setErrores([errorMessage])
     }
     finally {
       setCargando(false);

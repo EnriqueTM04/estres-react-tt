@@ -28,7 +28,24 @@ export const useAuth = ({ middleware, url }) => {
             setErrores([]);
             await mutate();
         } catch (error) {
-            setErrores(Object.values(error.response.data.errors));
+            const apiErrors = error?.response?.data?.errors;
+
+            if (Array.isArray(apiErrors)) {
+                setErrores(apiErrors);
+                return;
+            }
+
+            if (apiErrors && typeof apiErrors === 'object') {
+                setErrores(Object.values(apiErrors).flat());
+                return;
+            }
+
+            if (error?.response?.data?.message) {
+                setErrores([error.response.data.message]);
+                return;
+            }
+
+            setErrores(['No fue posible iniciar sesión. Verifica la conexión con la API e inténtalo de nuevo.']);
         }
     }
 
