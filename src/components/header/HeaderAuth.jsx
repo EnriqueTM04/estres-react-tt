@@ -20,11 +20,18 @@ export default function HeaderAuth() {
 
       {/* Navegación y botón */}
       <div className="flex items-center gap-6">
+
         <Link
-          to="/"
+          to="/admin/inicio"
           className="text-sm text-gray-700 hover:text-cyan-500 font-medium"
         >
           Inicio
+        </Link>
+        <Link
+          to="/admin/estadisticas"
+          className="text-sm text-gray-700 hover:text-cyan-500 font-medium"
+        >
+          Estadísticas
         </Link>
 
         <button

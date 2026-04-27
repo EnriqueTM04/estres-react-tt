@@ -16,6 +16,7 @@ import Olvide from './views/Olvide.jsx'
 import { PacienteProvider } from './context/PacienteProvider.jsx'
 import ConfirmarCuenta from './views/guest/ConfirmarCuenta.jsx'
 import ConfirmarCuentaPaciente from './views/guest/ConfirmarCuentaPaciente.jsx'
+import Estadisticas from './views/admin/Estadisticas.jsx'
 import ApkDownload from './views/guest/ApkDownload.jsx'
 
 const router = createBrowserRouter([
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
             {
                 path: 'inicio',
                 element: <Inicio />
+            },
+            {
+                path: 'estadisticas',
+                element: <Estadisticas />
             }
         ]
     },
