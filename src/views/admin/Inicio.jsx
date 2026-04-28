@@ -81,13 +81,14 @@ export default function Inicio() {
       </style>
 
       <div className="flex h-full grow flex-col">
-        <div className="px-4 md:px-40 flex flex-1 justify-center py-5">
-          <div className="flex flex-col max-w-[960px] flex-1">
+        {/* Cambié los márgenes laterales para que sean progresivos (sm, lg, xl) en lugar de saltar directo a md:px-40 */}
+        <div className="px-4 sm:px-6 lg:px-12 xl:px-40 flex flex-1 justify-center py-5">
+          <div className="flex flex-col w-full max-w-[960px] flex-1">
 
             {/* Header de la Sección */}
-            <div className="flex flex-wrap justify-between gap-3 p-4">
-              <div className="flex min-w-72 flex-col gap-3">
-                <p className="text-[#0e1b1b] text-[32px] font-bold leading-tight tracking-tight">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-between gap-4 p-4">
+              <div className="flex w-full sm:w-auto sm:min-w-72 flex-col gap-2 sm:gap-3">
+                <p className="text-[#0e1b1b] text-2xl sm:text-[32px] font-bold leading-tight tracking-tight">
                   Administración de Usuarios
                 </p>
                 <p className="text-[#4e9797] text-sm font-normal leading-normal">
@@ -96,7 +97,7 @@ export default function Inicio() {
               </div>
               <button
                 onClick={handleCrear}
-                className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#e7f3f3] hover:bg-[#d0e7e7] text-[#0e1b1b] text-sm font-bold leading-normal transition-colors gap-2">
+                className="flex w-full sm:w-auto min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#e7f3f3] hover:bg-[#d0e7e7] text-[#0e1b1b] text-sm font-bold leading-normal transition-colors gap-2">
                 <Plus size={18} />
                 <span>Agregar Psicólogo</span>
               </button>
@@ -104,41 +105,42 @@ export default function Inicio() {
 
             {/* Stats Cards */}
             <div className="flex flex-wrap gap-4 p-4">
-              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#d0e7e7] bg-white shadow-sm">
+              <div className="flex w-full sm:w-auto min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#d0e7e7] bg-white shadow-sm">
                 <p className="text-[#0e1b1b] text-base font-medium leading-normal">Usuarios Registrados</p>
                 <p className="text-[#0e1b1b] tracking-tight text-3xl font-bold leading-tight">{totalPsicologos}</p>
               </div>
             </div>
 
             {/* Tabla de Usuarios */}
-            <div className="px-4 py-3">
-              <div className="overflow-hidden rounded-xl border border-[#d0e7e7] bg-[#f8fcfc] shadow-sm">
-                <div className="overflow-x-auto">
+            <div className="px-2 sm:px-4 py-3">
+              <div className="overflow-hidden rounded-xl border border-[#d0e7e7] bg-[#f8fcfc] shadow-sm w-full">
+                {/* Contenedor con scroll horizontal */}
+                <div className="overflow-x-auto w-full">
                   <table className="w-full min-w-[800px]">
                     <thead>
                       <tr className="bg-[#f8fcfc] border-b border-[#d0e7e7]">
-                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[25%]">Nombre</th>
-                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[30%]">Correo Electrónico</th>
-                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[15%]">Rol</th>
-                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal w-[15%]">Correo confirmado</th>
-                        <th className="px-4 py-4 text-right text-[#4e9797] text-sm font-bold leading-normal w-[15%]">Acciones</th>
+                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal whitespace-nowrap">Nombre</th>
+                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal whitespace-nowrap">Correo Electrónico</th>
+                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal whitespace-nowrap">Rol</th>
+                        <th className="px-4 py-4 text-left text-[#0e1b1b] text-sm font-bold leading-normal whitespace-nowrap">Correo confirmado</th>
+                        <th className="px-4 py-4 text-right text-[#4e9797] text-sm font-bold leading-normal whitespace-nowrap">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
                       {psicologos.map((psicologo) => (
                         <tr key={psicologo.id} className="border-t border-[#d0e7e7] hover:bg-[#e7f3f3]/30 transition-colors">
-                          <td className="px-4 py-4 text-[#0e1b1b] text-sm font-medium">
+                          <td className="px-4 py-4 text-[#0e1b1b] text-sm font-medium whitespace-nowrap">
                             {psicologo.user?.name || 'Sin nombre'}
                           </td>
-                          <td className="px-4 py-4 text-[#4e9797] text-sm">
+                          <td className="px-4 py-4 text-[#4e9797] text-sm whitespace-nowrap">
                             {psicologo.user.email}
                           </td>
-                          <td className="px-4 py-4">
+                          <td className="px-4 py-4 whitespace-nowrap">
                             <span className="inline-flex items-center justify-center rounded-xl h-8 px-4 bg-[#e7f3f3] text-[#0e1b1b] text-sm font-medium w-full max-w-[120px]">
                               {psicologo.user?.role || 'N/A'}
                             </span>
                           </td>
-                          <td className="px-4 py-4">
+                          <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center justify-center gap-2 rounded-xl h-8 px-4 text-sm font-medium w-full max-w-[140px] border ${psicologo.user.verified
                                 ? 'bg-[#e7f3f3] border-transparent text-[#0e1b1b]'
                                 : 'bg-transparent border-[#d0e7e7] text-gray-500'
@@ -154,9 +156,8 @@ export default function Inicio() {
                               )}
                             </span>
                           </td>
-                          <td className="px-4 py-4 text-right">
+                          <td className="px-4 py-4 text-right whitespace-nowrap">
                             <div className="flex justify-end gap-2">
-                              {/* Botón de Editar con el evento onClick */}
                               <button
                                 onClick={() => handleEditar(psicologo)}
                                 className="p-2 text-[#4e9797] hover:text-[#0e1b1b] hover:bg-[#e7f3f3] rounded-lg transition-colors"
@@ -164,7 +165,6 @@ export default function Inicio() {
                               >
                                 <Edit2 size={18} />
                               </button>
-                              {/* Botón de Eliminar */}
                               <button
                                 onClick={() => handleEliminar(psicologo)}
                                 className="p-2 text-[#4e9797] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -186,7 +186,6 @@ export default function Inicio() {
         </div>
       </div>
 
-      {/* Modal con las nuevas props */}
       <ModalAgregarPsicologo
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

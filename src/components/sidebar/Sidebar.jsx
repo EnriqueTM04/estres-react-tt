@@ -10,31 +10,36 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logo from "../../assets/Isotipo-Logo Final-03.svg";
 import { useAuth } from '../../hooks/useAuth';
 
-export default function Sidebar() {
-  // Estado para controlar la visibilidad del botón de cerrar sesión
+export default function Sidebar({ isOpen, setIsOpen }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   useNavigate();
   const { user, logout } = useAuth({ middleware: "auth" });
 
-  // estilos para resaltar la sección activa en el sidebar
   const location = useLocation();
   const isActive = (path) => location.pathname.includes(path);
 
+  // Funcion para cerrar el menu en movil tras hacer clic en un enlace
+  const handleLinkClick = () => {
+    if (setIsOpen) setIsOpen(false);
+  };
+
   return (
-    <aside className="w-64 bg-[#2C3E50] dark:bg-black/20 hidden md:flex flex-col fixed h-full z-10 transition-all duration-300">
-      {/* Logo */}
-      <div className="h-20 flex items-center justify-center border-b border-white/10 dark:border-white/5">
+    <aside 
+      className={`w-64 bg-[#2C3E50] dark:bg-[#1a252f] flex flex-col fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      } shadow-2xl md:shadow-none`}
+    >
+      <div className="h-20 flex items-center justify-center border-b border-white/10 dark:border-white/5 shrink-0">
         <div className="flex items-center gap-3">
           <img src={logo} alt="Logo VidaZen" className="w-14 h-14" />
           <h1 className="text-2xl font-bold text-white tracking-wide font-['Nunito_Sans']">VidaZen</h1>
         </div>
       </div>
-
-      {/* Navegación */}
-      <nav className="flex-1 px-4 py-6 space-y-2 font-['Nunito_Sans']">
-        {/* --- Dashboard --- */}
+-
+      <nav className="flex-1 px-4 py-6 space-y-2 font-['Nunito_Sans'] overflow-y-auto">
         <Link 
           to="/psicologo/dashboard" 
+          onClick={handleLinkClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors group ${
             isActive('/psicologo/dashboard') 
               ? 'bg-[#85C1E9]/20 text-white relative' 
@@ -50,9 +55,9 @@ export default function Sidebar() {
           <span className="font-medium">Panel Principal</span>
         </Link>
 
-        {/* --- Pacientes --- */}
         <Link 
           to="/psicologo/pacientes" 
+          onClick={handleLinkClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors group ${
             isActive('/psicologo/pacientes') 
               ? 'bg-[#85C1E9]/20 text-white relative' 
@@ -68,9 +73,9 @@ export default function Sidebar() {
           <span className="font-medium">Pacientes</span>
         </Link>
 
-        {/* --- Citas --- */}
         <Link 
           to="/psicologo/citas" 
+          onClick={handleLinkClick}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors group ${
             isActive('/psicologo/citas') 
               ? 'bg-[#85C1E9]/20 text-white relative' 
@@ -87,17 +92,17 @@ export default function Sidebar() {
         </Link>
       </nav>
 
-      {/* Footer del Sidebar (Perfil + Config + LogOut) */}
-      <div className="p-4 border-t border-white/10 dark:border-white/5 font-['Nunito_Sans']">
-
-        {/* --- SECCIÓN PERFIL INTERACTIVA --- */}
+      {/* Footer del Sidebar */}
+      <div className="p-4 border-t border-white/10 dark:border-white/5 font-['Nunito_Sans'] shrink-0">
         <div className="relative">
-          
-          {/* Menú Flotante (Pop-up) */}
+          {/* Menú Flotante */}
           {isProfileOpen && (
-            <div className="absolute bottom-full left-0 mb-2 w-full bg-white dark:bg-[#1a252f] rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-1 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <div className="absolute bottom-full left-0 mb-2 w-full bg-white dark:bg-[#1a252f] rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-1 overflow-hidden animate-in fade-in duration-200 z-50">
               <button 
-                onClick={logout}
+                onClick={() => {
+                  logout();
+                  handleLinkClick();
+                }}
                 className="flex items-center gap-3 w-full px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-bold transition-colors"
               >
                 <LogOut className="w-4 h-4" />
@@ -106,7 +111,6 @@ export default function Sidebar() {
             </div>
           )}
 
-          {/* Botón del Perfil */}
           <button 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
@@ -114,10 +118,9 @@ export default function Sidebar() {
             }`}
           >
             <div className="flex flex-col text-left">
-              <span className="text-sm font-semibold text-white">{user?.name}</span>
+              <span className="text-sm font-semibold text-white">{user?.name || "Cargando..."}</span>
               <span className="text-xs text-white/50">Psicóloga</span>
             </div>
-            {/* Flechita indicadora */}
             <ChevronUp 
               className={`w-4 h-4 ml-auto transition-transform duration-200 ${isProfileOpen ? 'rotate-180 text-white' : 'text-white/30'}`} 
             />
@@ -126,4 +129,4 @@ export default function Sidebar() {
       </div>
     </aside>
   );
-};
+}
