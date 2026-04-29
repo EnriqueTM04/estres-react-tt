@@ -7,7 +7,10 @@ import {
   Lock, 
   ArrowRight,
   ShieldCheck,
-  Flower
+  Flower,
+  Info,
+  Eye,      
+  EyeOff     
 } from 'lucide-react';
 
 export default function ResetPassword() {
@@ -21,6 +24,10 @@ export default function ResetPassword() {
 
   const [errores, setErrores] = useState([]);
   const [modificado, setModificado] = useState(false);
+  
+  // <-- NUEVOS ESTADOS para ver/ocultar contraseñas
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [mostrarPasswordConfirmacion, setMostrarPasswordConfirmacion] = useState(false);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -28,14 +35,8 @@ export default function ResetPassword() {
     const password = passwordRef.current.value;
     const password_confirmation = passwordConfirmationRef.current.value;
 
-    // Validación básica en el frontend
     if (password !== password_confirmation) {
       setErrores(["Las contraseñas no coinciden"]);
-      return;
-    }
-
-    if (password.length < 8) {
-      setErrores(["La contraseña debe tener al menos 8 caracteres"]);
       return;
     }
 
@@ -46,7 +47,6 @@ export default function ResetPassword() {
       password_confirmation
     }
 
-    // resetPassword(datos, setErrores, setModificado);
     try {
       await clienteAxios.post('/api/reset-password', datos);
     } catch (error) {
@@ -54,12 +54,11 @@ export default function ResetPassword() {
       return;
     }
     
-    // Simulación de éxito
     setModificado(true);
     setErrores([]);
   }
 
-  // Si alguien entra a la ruta sin token o email, mostrar un error o redirigir
+  // Si alguien entra a la ruta sin token o email
   if (!token || !email) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F0F4F8] font-['Montserrat'] text-[#2C3E50]">
@@ -88,7 +87,6 @@ export default function ResetPassword() {
 
       <div className="max-w-4xl w-full grid md:grid-cols-2 bg-white dark:bg-gray-900 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300">
         
-        {/* --- PANEL IZQUIERDO (Branding) --- */}
         <div className="hidden md:flex flex-col justify-between p-12 bg-gradient-to-br from-[#A2D9CE] via-[#85C1E9] to-[#B6E3F2] relative overflow-hidden">
           <div className="absolute -top-20 -left-20 w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
           
@@ -120,7 +118,6 @@ export default function ResetPassword() {
           </div>
         </div>
 
-        {/* --- PANEL DERECHO (Formulario) --- */}
         <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-white dark:bg-gray-900">
           
           {/* Header Móvil */}
@@ -142,6 +139,7 @@ export default function ResetPassword() {
               <form className="space-y-6" onSubmit={handleSubmit}>
                 {errores.length > 0 && errores.map((error, i) => <Alerta key={i}>{error}</Alerta>)}
                 
+                {/* --- INPUT NUEVA CONTRASEÑA --- */}
                 <div>
                   <label className="block text-sm font-semibold text-[#2C3E50] dark:text-gray-300 mb-2" htmlFor="password">
                     Nueva contraseña
@@ -150,15 +148,30 @@ export default function ResetPassword() {
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input 
                       id="password" 
-                      type="password" 
+                      type={mostrarPassword ? "text" : "password"}
                       ref={passwordRef}
                       required 
-                      placeholder="Mínimo 8 caracteres"
-                      className="w-full pl-12 pr-4 py-3.5 bg-[#FBFCFC] dark:bg-gray-800 border-transparent focus:border-[#85C1E9] focus:ring-4 focus:ring-[#85C1E9]/10 rounded-xl transition-all outline-none dark:text-white placeholder-gray-400"
+                      placeholder="Ej. Vidazen2024!"
+                      className="w-full pl-12 pr-12 py-3.5 bg-[#FBFCFC] dark:bg-gray-800 border-transparent focus:border-[#85C1E9] focus:ring-4 focus:ring-[#85C1E9]/10 rounded-xl transition-all outline-none dark:text-white placeholder-gray-400"
                     />
+                    {/* Botón Ver/Ocultar */}
+                    <button
+                      type="button"
+                      onClick={() => setMostrarPassword(!mostrarPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#85C1E9] transition-colors focus:outline-none"
+                    >
+                      {mostrarPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  <div className="flex items-start gap-2 mt-2 px-1">
+                    <Info className="w-4 h-4 text-[#85C1E9] shrink-0 mt-0.5" />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">
+                      La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial (@!$:%*?&).
+                    </p>
                   </div>
                 </div>
 
+                {/* --- INPUT CONFIRMAR CONTRASEÑA --- */}
                 <div>
                   <label className="block text-sm font-semibold text-[#2C3E50] dark:text-gray-300 mb-2" htmlFor="password_confirmation">
                     Confirmar contraseña
@@ -167,12 +180,20 @@ export default function ResetPassword() {
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input 
                       id="password_confirmation" 
-                      type="password" 
+                      type={mostrarPasswordConfirmacion ? "text" : "password"} 
                       ref={passwordConfirmationRef}
                       required 
                       placeholder="Repite tu nueva contraseña"
-                      className="w-full pl-12 pr-4 py-3.5 bg-[#FBFCFC] dark:bg-gray-800 border-transparent focus:border-[#85C1E9] focus:ring-4 focus:ring-[#85C1E9]/10 rounded-xl transition-all outline-none dark:text-white placeholder-gray-400"
+                      className="w-full pl-12 pr-12 py-3.5 bg-[#FBFCFC] dark:bg-gray-800 border-transparent focus:border-[#85C1E9] focus:ring-4 focus:ring-[#85C1E9]/10 rounded-xl transition-all outline-none dark:text-white placeholder-gray-400"
                     />
+                    {/* Botón Ver/Ocultar */}
+                    <button
+                      type="button"
+                      onClick={() => setMostrarPasswordConfirmacion(!mostrarPasswordConfirmacion)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#85C1E9] transition-colors focus:outline-none"
+                    >
+                      {mostrarPasswordConfirmacion ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                   </div>
                 </div>
 

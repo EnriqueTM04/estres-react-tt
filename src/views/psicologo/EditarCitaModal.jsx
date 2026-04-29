@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import clienteAxios from '../../config/axios';
+import Alerta from '../../components/Alerta';
 import {
   X,
   Calendar,
@@ -12,6 +13,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('09:00');
   const [notas, setNotas] = useState('');
+  const [error, setError] = useState(null);
 
   // Sincronizar cuando cambia la cita
   useEffect(() => {
@@ -48,11 +50,17 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
           },
         }
       );
-
+      setError(null);
       onClose();
     } catch (error) {
       console.error('Error al guardar cambios', error);
+      setError(error.response?.data?.message || 'No se pudieron guardar los cambios. Intente nuevamente.');
     }
+  };
+
+  const handleClose = () => {
+    setError(null);
+    onClose();
   };
 
   const handleDelete = async (id) => {
@@ -73,6 +81,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
       onClose();
     } catch (error) {
       console.error('Error al eliminar cita', error);
+      setError(error.response?.data?.message || 'No se pudo eliminar la cita. Intente nuevamente.');
     }
   };
 
@@ -81,7 +90,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-[#2C3E50]/60 dark:bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -97,13 +106,16 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
                 {cita.paciente?.name || 'Sin nombre'}
               </p>
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+            <button onClick={handleClose} className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
               <X size={20} />
             </button>
           </div>
 
           {/* BODY */}
           <div className="px-6 py-5 space-y-5 bg-[#FBFCFC] dark:bg-[#1A252F]">
+
+            {error && <Alerta tipo="error">{error}</Alerta>}
+
             {/* Fecha */}
             <div>
               <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">
@@ -172,7 +184,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
 
             <div className="flex gap-3">
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancelar

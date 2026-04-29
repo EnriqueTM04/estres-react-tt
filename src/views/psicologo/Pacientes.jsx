@@ -30,7 +30,7 @@ export default function Pacientes() {
 
   const { data, isLoading, mutate } = useSWR('/api/pacientes', fetcher);
 
-  // --- 2. Fetcher para pacientes SIN asignar (Solo se ejecuta si el modal está abierto) ---
+  // Fetcher para pacientes SIN asignar (Solo se ejecuta si el modal está abierto) 
   const fetcherSinAsignar = () => clienteAxios.get('/api/pacientes', {
     params: {
       role: 'psicologo',
@@ -45,7 +45,7 @@ export default function Pacientes() {
 
   const pacientesSinAsignar = pacientes_sin_asignar?.pacientes_sin_asignar || [];
 
-  // --- 3. Función para asignar paciente ---
+  // Función para asignar paciente
   const handleAsignarPaciente = async (pacienteId) => {
     try {
       setAsignandoId(pacienteId);
@@ -149,10 +149,10 @@ export default function Pacientes() {
             <thead>
               <tr className="bg-gray-50 dark:bg-black/20 border-b border-gray-100 dark:border-gray-700">
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Paciente</th>
-                <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Progreso ultima actividad</th>
+                <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Progreso de la ultima actividad</th>
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Nivel de Estrés Actual</th>
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Última Sesión</th>
-                <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7] text-right">Acciones</th>
+                {/* <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7] text-right">Acciones</th> */}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -217,7 +217,7 @@ export default function Pacientes() {
                       onClick={(e) => {
                         e.stopPropagation();
                       }}>
-                      <MoreVertical className="w-5 h-5" />
+                      {/* <MoreVertical className="w-5 h-5" /> */}
                     </button>
                   </td>
                 </tr>

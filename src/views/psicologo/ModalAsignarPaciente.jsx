@@ -5,6 +5,7 @@ import clienteAxios from '../../config/axios';
 
 export default function ModalAsignarPaciente({ isOpen, onClose, onAsignado }) {
   const [asignandoId, setAsignandoId] = useState(null);
+  const [error, setError] = useState(null);
   const token = localStorage.getItem('AUTH_TOKEN');
 
   const fetcherSinAsignar = () => clienteAxios.get('/api/pacientes', {
@@ -31,6 +32,7 @@ export default function ModalAsignarPaciente({ isOpen, onClose, onAsignado }) {
       
     } catch (error) {
       console.error("Error al asignar paciente:", error);
+      setError("No se pudo asignar el paciente. Intente nuevamente.");
     } finally {
       setAsignandoId(null);
     }
