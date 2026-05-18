@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import useCitas from '../../hooks/useCitas';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
@@ -22,6 +22,7 @@ export default function Citas() {
     currentWeek,
     setCurrentWeek,
     getCita,
+    citas,
     daysOfWeek,
     setIsEditModalOpen,
     setSelectedCita,
@@ -44,6 +45,23 @@ export default function Citas() {
     '18:00',
     '19:00',
   ];
+
+  // Calcular citas próximas y de hoy
+  const { citasProximas, citasHoy } = useMemo(() => {
+    const hoy = dayjs().format('YYYY-MM-DD');
+    
+    const proximas = citas.filter(cita => {
+      const citaDate = dayjs(cita.fecha).format('YYYY-MM-DD');
+      return citaDate >= hoy;
+    });
+
+    const hoyMismas = citas.filter(cita => cita.fecha === hoy);
+
+    return {
+      citasProximas: proximas.length,
+      citasHoy: hoyMismas.length
+    };
+  }, [citas]);
 
 
   return (
@@ -71,9 +89,9 @@ export default function Citas() {
         <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between">
           <div>
             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Próximas Sesiones</p>
-            <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">0</h3>
+            <h3 className="text-3xl font-bold text-[#2C3E50] dark:text-white mt-1">{citasProximas}</h3>
             <p className="text-green-500 text-xs mt-2 font-medium flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +0 hoy
+              <TrendingUp className="w-3 h-3" /> +{citasHoy} hoy
             </p>
           </div>
           <div className="p-3 bg-[#A2D9CE]/20 rounded-full">

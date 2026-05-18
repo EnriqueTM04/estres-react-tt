@@ -119,7 +119,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           >
             <div className="flex flex-col text-left">
               <span className="text-sm font-semibold text-white">{user?.name || "Cargando..."}</span>
-              <span className="text-xs text-white/50">Psicóloga</span>
+              <span className="text-xs text-white/50">Psicólog@</span>
             </div>
             <ChevronUp 
               className={`w-4 h-4 ml-auto transition-transform duration-200 ${isProfileOpen ? 'rotate-180 text-white' : 'text-white/30'}`} 
