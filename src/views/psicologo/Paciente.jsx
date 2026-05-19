@@ -278,12 +278,19 @@ export default function Paciente() {
 
               {modulos && modulos.length > 0 ? (
                 modulos.map((modulo) => (
-                  <div key={modulo.id}>
+                  <div 
+                    key={modulo.id}
+                    onClick={() => navigate(`/psicologo/pacientes/${id}/editar-actividad/${modulo.id}`)}
+                    className="p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-[#85C1E9] hover:bg-[#85C1E9]/5 cursor-pointer transition-all group"
+                  >
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{modulo.nombre}</span>
-                      <span className={`text-xs font-bold ${modulo.progreso >= 80 ? 'text-indigo-400' : 'text-[#85C1E9]'}`}>
-                        {modulo.progreso}%
-                      </span>
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 group-hover:text-[#85C1E9] transition-colors">{modulo.nombre}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-bold ${modulo.progreso >= 80 ? 'text-indigo-400' : 'text-[#85C1E9]'}`}>
+                          {modulo.progreso}%
+                        </span>
+                        <Eye className="w-4 h-4 text-gray-400 group-hover:text-[#85C1E9] transition-colors opacity-0 group-hover:opacity-100" />
+                      </div>
                     </div>
                     <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5">
                       <div
@@ -399,24 +406,28 @@ export default function Paciente() {
             {journalingData.map((resp) => (
               <div
                 key={resp.id}
-                className="bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"
+                className="bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-md transition-shadow group"
+                onClick={() => navigate(`/psicologo/pacientes/${id}/editar-actividad/${resp.actividad?.id}`)}
               >
                 {/* Card header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-indigo-50 dark:bg-indigo-900/20">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1">
                     <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-500">
                       <BookOpen className="w-4 h-4" />
                     </div>
-                    <span className="font-bold text-[#2C3E50] dark:text-white text-sm">
+                    <span className="font-bold text-[#2C3E50] dark:text-white text-sm group-hover:text-[#85C1E9] transition-colors">
                       {resp.actividad?.nombre ?? 'Actividad de journaling'}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    {new Date(resp.created_at).toLocaleDateString('es-MX', {
-                      year: 'numeric', month: 'short', day: 'numeric',
-                      hour: '2-digit', minute: '2-digit'
-                    })}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      {new Date(resp.created_at).toLocaleDateString('es-MX', {
+                        year: 'numeric', month: 'short', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                      })}
+                    </span>
+                    <Eye className="w-5 h-5 text-gray-400 group-hover:text-[#85C1E9] transition-colors opacity-0 group-hover:opacity-100" />
+                  </div>
                 </div>
 
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -6,7 +6,9 @@ import {
   CalendarDays,
   AlertTriangle,
   TrendingUp,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import useSWR from 'swr';
 import clienteAxios from '../../config/axios';
@@ -20,14 +22,23 @@ export default function Pacientes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [asignandoId, setAsignandoId] = useState(null);
 
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage] = useState(50);
+
   const fetcher = () => clienteAxios.get('/api/pacientes', {
     params: {
       role: 'psicologo',
+      page: currentPage,
+      per_page: perPage
     },
     headers: { Authorization: `Bearer ${token}` }
   }).then(res => res.data);
 
-  const { data, isLoading, mutate } = useSWR('/api/pacientes', fetcher);
+  const { data, isLoading, mutate } = useSWR(
+    `/api/pacientes?page=${currentPage}&per_page=${perPage}`,
+    fetcher
+  );
 
   // Fetcher para pacientes SIN asignar (Solo se ejecuta si el modal está abierto) 
   const fetcherSinAsignar = () => clienteAxios.get('/api/pacientes', {
@@ -53,6 +64,7 @@ export default function Pacientes() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+      setCurrentPage(1); // Resetear a página 1
       mutate();
       mutateSinAsignar();
 
@@ -116,7 +128,7 @@ export default function Pacientes() {
           </div>
           <div>
             <p className="text-sm text-[#5D6D7E] dark:text-[#BDC3C7] font-medium">Total de Pacientes</p>
-            <h3 className="text-2xl font-bold text-[#2C3E50] dark:text-white">{data?.data.length}</h3>
+            <h3 className="text-2xl font-bold text-[#2C3E50] dark:text-white">{data?.meta?.total || 0}</h3>
           </div>
         </div>
 
@@ -223,6 +235,30 @@ export default function Pacientes() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center justify-between p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+          <div className="text-sm text-[#5D6D7E] dark:text-[#BDC3C7]">
+            Mostrando página <span className="font-semibold">{data?.meta?.current_page || 1}</span> de{' '}
+            <span className="font-semibold">{data?.meta?.last_page || 1}</span> ({data?.meta?.total || 0} pacientes)
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-[#2C3E50] border border-gray-200 dark:border-gray-600 text-[#5D6D7E] dark:text-[#BDC3C7] hover:border-[#85C1E9] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            >
+              <ChevronLeft className="w-4 h-4" /> Anterior
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              disabled={currentPage >= (data?.meta?.last_page || 1)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-[#2C3E50] border border-gray-200 dark:border-gray-600 text-[#5D6D7E] dark:text-[#BDC3C7] hover:border-[#85C1E9] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            >
+              Siguiente <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
