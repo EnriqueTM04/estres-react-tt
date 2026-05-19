@@ -21,15 +21,14 @@ export default function Pacientes() {
   // Estados del Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [asignandoId, setAsignandoId] = useState(null);
-  
+
   // Estados de paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage] = useState(10);
+  const [perPage] = useState(50);
 
   const fetcher = () => clienteAxios.get('/api/pacientes', {
     params: {
       role: 'psicologo',
-      consulta: 'ultimos',
       page: currentPage,
       per_page: perPage
     },
@@ -50,7 +49,7 @@ export default function Pacientes() {
   }).then(res => res.data);
 
   const { data: pacientes_sin_asignar, isLoading: cargandoSinAsignar, mutate: mutateSinAsignar } = useSWR(
-    isModalOpen ? '/api/pacientes' : null,
+    isModalOpen ? '/api/pacientes/sin-asignar' : null,
     fetcherSinAsignar
   );
 
@@ -201,8 +200,8 @@ export default function Pacientes() {
                       <div className="flex justify-between text-xs">
                         <span className="text-[#5D6D7E] dark:text-[#BDC3C7]">{paciente.estres}</span>
                         <span className={`font-bold ${paciente.nivel_estres_actual > 25 ? 'text-red-500' :
-                            paciente.nivel_estres_actual > 19 ? 'text-[#85C1E9]' :
-                              paciente.nivel_estres_actual === 0 ? 'text-gray-400' : 'text-[#A2D9CE]'
+                          paciente.nivel_estres_actual > 19 ? 'text-[#85C1E9]' :
+                            paciente.nivel_estres_actual === 0 ? 'text-gray-400' : 'text-[#A2D9CE]'
                           }`}>
                           {paciente.nivel_estres_actual > 0 ? `${Math.round(paciente.nivel_estres_actual)}%` : '--'}
                         </span>
@@ -210,8 +209,8 @@ export default function Pacientes() {
                       <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-600 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${paciente.nivel_estres_actual > 25 ? 'bg-red-500' :
-                              paciente.nivel_estres_actual > 19 ? 'bg-[#85C1E9]' :
-                                paciente.nivel_estres_actual === 0 ? 'bg-transparent' : 'bg-[#A2D9CE]'
+                            paciente.nivel_estres_actual > 19 ? 'bg-[#85C1E9]' :
+                              paciente.nivel_estres_actual === 0 ? 'bg-transparent' : 'bg-[#A2D9CE]'
                             }`}
                           style={{ width: `${paciente.porcentaje}%` }}
                         ></div>
@@ -312,8 +311,8 @@ export default function Pacientes() {
                         onClick={() => handleAsignarPaciente(paciente.id)}
                         disabled={asignandoId === paciente.id}
                         className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 ${asignandoId === paciente.id
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800'
-                            : 'bg-[#A2D9CE] hover:bg-[#85C1E9] text-[#2C3E50] hover:text-white'
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800'
+                          : 'bg-[#A2D9CE] hover:bg-[#85C1E9] text-[#2C3E50] hover:text-white'
                           }`}
                       >
                         {asignandoId === paciente.id ? (
