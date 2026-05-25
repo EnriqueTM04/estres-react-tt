@@ -76,6 +76,32 @@ export default function Pacientes() {
     }
   };
 
+  // ELIMINAR PACIENTE DEL PSICOLOGO (Desasignar)
+  const handleDesasignarPaciente = async (pacienteId) => {
+
+    console.log("Intentando desasignar paciente con ID:", pacienteId);
+    // Confirmación para evitar clics accidentales
+    const confirmar = window.confirm("¿Estás seguro de que deseas remover a este paciente de tu lista?");
+    if (!confirmar) return;
+
+    try {
+      await clienteAxios.put(`/api/pacientes/desasignar-psicologo`, {},
+        { params: { paciente_id: pacienteId },}, 
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      // Refrescar ambas listas
+      mutate();
+      mutateSinAsignar();
+
+    } catch (error) {
+      console.error("Error al desasignar paciente:", error);
+      alert("Hubo un error al intentar remover al paciente.");
+    }
+  };
+
   if (isLoading) {
     <div className="flex-1 md:ml-64 p-6 lg:p-10 transition-all duration-300 font-['Nunito_Sans']">
       <p className="text-center text-gray-500 dark:text-gray-400">Cargando pacientes...</p>
@@ -84,7 +110,7 @@ export default function Pacientes() {
 
   let estresAlto = 0;
 
-  data?.data.forEach(paciente => {
+  data?.data?.forEach(paciente => {
     paciente.porcentaje = (paciente.nivel_estres_actual / 56) * 100;
     if (paciente.nivel_estres_actual < 20) {
       paciente.estres = 'Bajo';
@@ -164,7 +190,7 @@ export default function Pacientes() {
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Progreso de la ultima actividad</th>
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Nivel de Estrés Actual</th>
                 <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7]">Última Sesión</th>
-                {/* <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7] text-right">Acciones</th> */}
+                <th className="p-5 text-xs font-bold uppercase tracking-wider text-[#5D6D7E] dark:text-[#BDC3C7] text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -225,11 +251,15 @@ export default function Pacientes() {
                     </div>
                   </td>
                   <td className="p-5 text-right">
-                    <button className="text-gray-400 hover:text-[#85C1E9] dark:hover:text-white transition-colors"
+                    <button 
+                      title="Remover paciente"
+                      className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
                       onClick={(e) => {
                         e.stopPropagation();
-                      }}>
-                      {/* <MoreVertical className="w-5 h-5" /> */}
+                        handleDesasignarPaciente(paciente.id);
+                      }}
+                    >
+                      <MoreVertical className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
