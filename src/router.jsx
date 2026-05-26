@@ -16,6 +16,7 @@ import Olvide from './views/Olvide.jsx'
 import { PacienteProvider } from './context/PacienteProvider.jsx'
 import ConfirmarCuenta from './views/guest/ConfirmarCuenta.jsx'
 import ConfirmarCuentaPaciente from './views/guest/ConfirmarCuentaPaciente.jsx'
+import EnlaceExpirado from './views/guest/EnlaceExpirado.jsx'
 import Estadisticas from './views/admin/Estadisticas.jsx'
 import ApkDownload from './views/guest/ApkDownload.jsx'
 
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
     {
         path: "/cuenta-confirmada-paciente",
         element: <ConfirmarCuentaPaciente />
+    },
+    {
+        path: "/enlace-expirado",
+        element: <EnlaceExpirado />
     },
     {
         path: "/auth",
