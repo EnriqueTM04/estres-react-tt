@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import {
   Users,
   Plus,
-  MoreVertical,
   CalendarDays,
   AlertTriangle,
   TrendingUp,
+  Trash2,
   X,
   ChevronLeft,
   ChevronRight
@@ -32,6 +32,9 @@ export default function Pacientes() {
     pacienteId: null,
     pacienteNombre: ''
   });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [stressOrder, setStressOrder] = useState('none');
+  const [appointmentsFilter, setAppointmentsFilter] = useState('all');
 
   // Estados de paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -135,21 +138,53 @@ export default function Pacientes() {
     </div>
   }
 
-  let estresAlto = 0;
+  const pacientesProcesados = (data?.data || []).map((paciente) => {
+    const nivelEstres = Number(paciente.nivel_estres_actual || 0);
+    const porcentaje = (nivelEstres / 56) * 100;
 
-  data?.data?.forEach(paciente => {
-    paciente.porcentaje = (paciente.nivel_estres_actual / 56) * 100;
-    if (paciente.nivel_estres_actual < 20) {
-      paciente.estres = 'Bajo';
-    }
-    if (paciente.nivel_estres_actual >= 20 && paciente.nivel_estres_actual <= 25) {
-      paciente.estres = 'Moderado'
-    }
-    if (paciente.nivel_estres_actual > 25) {
-      paciente.estres = 'Elevado'
-      estresAlto++;
-    }
+    let estres = 'Bajo';
+    if (nivelEstres >= 20 && nivelEstres <= 25) estres = 'Moderado';
+    if (nivelEstres > 25) estres = 'Elevado';
+
+    const tieneCitaAgendada = Boolean(
+      paciente.ultima_sesion?.fecha ||
+      paciente.proxima_sesion?.fecha ||
+      paciente.sesion_proxima?.fecha
+    );
+
+    return {
+      ...paciente,
+      nivelEstres,
+      porcentaje,
+      estres,
+      tieneCitaAgendada,
+    };
   });
+
+  const estresAlto = pacientesProcesados.filter((paciente) => paciente.nivelEstres > 25).length;
+
+  const normalizeText = (text = '') => text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  const normalizedSearchTerm = normalizeText(searchTerm.trim());
+
+  const pacientesFiltrados = [...pacientesProcesados]
+    .filter((paciente) => {
+      const nombre = normalizeText(paciente.user?.name || '');
+      return nombre.includes(normalizedSearchTerm);
+    })
+    .filter((paciente) => {
+      if (appointmentsFilter === 'con-cita') return paciente.tieneCitaAgendada;
+      if (appointmentsFilter === 'sin-cita') return !paciente.tieneCitaAgendada;
+      return true;
+    })
+    .sort((a, b) => {
+      if (stressOrder === 'asc') return a.nivelEstres - b.nivelEstres;
+      if (stressOrder === 'desc') return b.nivelEstres - a.nivelEstres;
+      return 0;
+    });
 
   // Para prevenir errores si la API devuelve directamente un array o un objeto paginado
   const listaSinAsignar = pacientesSinAsignar?.data || pacientesSinAsignar || [];
@@ -209,6 +244,38 @@ export default function Pacientes() {
 
       {/* Table (Mismo código tuyo) */}
       <div className="bg-white dark:bg-[#2C3E50] rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="p-4 md:p-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50/60 dark:bg-black/10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar por nombre del paciente"
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#2C3E50] px-4 py-2.5 text-sm text-[#2C3E50] dark:text-white focus:ring-2 focus:ring-[#85C1E9]/40 focus:border-[#85C1E9] outline-none"
+            />
+
+            <select
+              value={stressOrder}
+              onChange={(e) => setStressOrder(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#2C3E50] px-4 py-2.5 text-sm text-[#2C3E50] dark:text-white focus:ring-2 focus:ring-[#85C1E9]/40 focus:border-[#85C1E9] outline-none"
+            >
+              <option value="none">Estrés: Sin ordenar</option>
+              <option value="asc">Estrés: Ascendente</option>
+              <option value="desc">Estrés: Descendente</option>
+            </select>
+
+            <select
+              value={appointmentsFilter}
+              onChange={(e) => setAppointmentsFilter(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#2C3E50] px-4 py-2.5 text-sm text-[#2C3E50] dark:text-white focus:ring-2 focus:ring-[#85C1E9]/40 focus:border-[#85C1E9] outline-none"
+            >
+              <option value="all">Citas: Todos</option>
+              <option value="con-cita">Citas: Con cita agendada</option>
+              <option value="sin-cita">Citas: Sin cita agendada</option>
+            </select>
+          </div>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -221,7 +288,15 @@ export default function Pacientes() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {data?.data.map((paciente) => (
+              {pacientesFiltrados.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-6 text-center text-sm text-[#5D6D7E] dark:text-[#BDC3C7]">
+                    No hay pacientes que coincidan con los filtros seleccionados.
+                  </td>
+                </tr>
+              )}
+
+              {pacientesFiltrados.map((paciente) => (
                 <tr key={paciente.id}
                   onClick={() => navigate(`/psicologo/pacientes/${paciente.id}`)}
                   className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer">
@@ -257,7 +332,7 @@ export default function Pacientes() {
                           paciente.nivel_estres_actual > 19 ? 'text-[#85C1E9]' :
                             paciente.nivel_estres_actual === 0 ? 'text-gray-400' : 'text-[#A2D9CE]'
                           }`}>
-                          {paciente.nivel_estres_actual > 0 ? `${Math.round(paciente.nivel_estres_actual)}%` : '--'}
+                          {paciente.nivelEstres > 0 ? `${Math.round(paciente.nivelEstres)}%` : '--'}
                         </span>
                       </div>
                       <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-600 rounded-full overflow-hidden">
@@ -290,7 +365,7 @@ export default function Pacientes() {
                         });
                       }}
                     >
-                      <MoreVertical className="w-5 h-5" />
+                      <Trash2 className="w-5 h-5" aria-label="Eliminar paciente" />
                     </button>
                   </td>
                 </tr>
@@ -303,7 +378,7 @@ export default function Pacientes() {
         <div className="flex items-center justify-between p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
           <div className="text-sm text-[#5D6D7E] dark:text-[#BDC3C7]">
             Mostrando página <span className="font-semibold">{data?.meta?.current_page || 1}</span> de{' '}
-            <span className="font-semibold">{data?.meta?.last_page || 1}</span> ({data?.meta?.total || 0} pacientes)
+            <span className="font-semibold">{data?.meta?.last_page || 1}</span> ({pacientesFiltrados.length} pacientes filtrados)
           </div>
           <div className="flex items-center gap-2">
             <button
