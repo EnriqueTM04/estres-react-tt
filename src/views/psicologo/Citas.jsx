@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 
 export default function Citas() {
+  const today = dayjs().startOf('day');
+
   const [feedbackDialog, setFeedbackDialog] = useState({
     open: false,
     type: 'info',
@@ -169,17 +171,24 @@ export default function Citas() {
                     );
                   }
 
+                  const isPastCita = dayjs(cita.fecha).isBefore(today, 'day');
+
                   // Celda con cita
                   return (
                     <div
                       key={cita.id ?? `${day.format('YYYY-MM-DD')}-${hora}`}
                       onClick={() => {
+                        if (isPastCita) return;
                         setSelectedCita(cita);
                         setIsEditModalOpen(true);
                       }}
-                      className="p-2 rounded-r-md rounded-bl-sm h-full cursor-pointer hover:shadow-md transition-shadow bg-[#A2D9CE]/20 border-l-4 border-[#A2D9CE]"
+                      className={`p-2 rounded-r-md rounded-bl-sm h-full border-l-4 transition-shadow ${isPastCita
+                          ? 'cursor-not-allowed bg-gray-200/70 dark:bg-gray-700/60 border-l-gray-400 text-gray-500 dark:text-gray-400 opacity-85'
+                          : 'cursor-pointer hover:shadow-md bg-[#A2D9CE]/20 border-[#A2D9CE]'
+                        }`}
                       role="button"
-                      tabIndex={0}
+                      tabIndex={isPastCita ? -1 : 0}
+                      aria-disabled={isPastCita}
                     >
                       <p className="text-xs font-bold truncate">
                         {cita.paciente?.name ?? 'Paciente'}
