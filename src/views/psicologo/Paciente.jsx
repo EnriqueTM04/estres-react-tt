@@ -17,7 +17,7 @@ import { useRef, useState } from 'react';
 import useSWR from 'swr';
 import clienteAxios from '../../config/axios';
 import usePaciente from '../../hooks/usePaciente';
-import jsPDF from 'jspdf';
+import BrandDialog from '../../components/BrandDialog';
 
 // --- CONFIGURACIÓN DE CHART.JS ---
 import {
@@ -51,6 +51,11 @@ export default function Paciente() {
 
   // Referencia para el contenedor del PDF y estado de carga
   const printRef = useRef();
+  const [feedbackDialog, setFeedbackDialog] = useState({
+    open: false,
+    type: 'info',
+    message: ''
+  });
 
   const { formarPDF, isGeneratingPDF, setIsGeneratingPDF } = usePaciente();
 
@@ -140,11 +145,13 @@ export default function Paciente() {
     if (!apiData) return;
     setIsGeneratingPDF(true);
 
-    formarPDF(datosParaPDF);
+    const resultado = await formarPDF(datosParaPDF);
 
-    setTimeout(() => {
-      setIsGeneratingPDF(false);
-    }, 2000);
+    setFeedbackDialog({
+      open: true,
+      type: resultado?.ok ? 'success' : 'error',
+      message: resultado?.message || 'No fue posible generar el reporte.'
+    });
   };
 
   // --- ESTADO DE CARGA Y ERROR ---
@@ -278,7 +285,7 @@ export default function Paciente() {
 
               {modulos && modulos.length > 0 ? (
                 modulos.map((modulo) => (
-                  <div 
+                  <div
                     key={modulo.id}
                     onClick={() => navigate(`/psicologo/pacientes/${id}/editar-actividad/${modulo.id}`)}
                     className="p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-[#85C1E9] hover:bg-[#85C1E9]/5 cursor-pointer transition-all group"
@@ -472,6 +479,14 @@ export default function Paciente() {
           </div>
         )}
       </div>
+
+      <BrandDialog
+        isOpen={feedbackDialog.open}
+        title="VidaZen"
+        message={feedbackDialog.message}
+        variant={feedbackDialog.type}
+        onClose={() => setFeedbackDialog({ open: false, type: 'info', message: '' })}
+      />
 
     </div>
   );

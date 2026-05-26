@@ -176,11 +176,17 @@ const PacienteProvider = ({ children }) => {
             }
 
             doc.save(`Reporte_Paciente_${perfil.nombre.replace(/\s+/g, '_')}.pdf`);
-            alert('Reporte generado exitosamente.');
+            return {
+                ok: true,
+                message: 'Reporte generado exitosamente.'
+            };
 
         } catch (err) {
             console.error('Error al generar el PDF:', err);
-            alert('Hubo un error. Inténtelo más tarde.');
+            return {
+                ok: false,
+                message: 'Hubo un error. Intentelo mas tarde.'
+            };
         } finally {
             setIsGeneratingPDF(false);
         }

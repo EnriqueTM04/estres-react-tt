@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import clienteAxios from '../../config/axios';
 import Alerta from '../../components/Alerta';
+import BrandDialog from '../../components/BrandDialog';
 import {
   X,
   Calendar,
   Trash2
 } from 'lucide-react';
 
-export default function EditarCitaModal({ isOpen, onClose, cita }) {
+export default function EditarCitaModal({ isOpen, onClose, cita, onActionComplete }) {
 
   // Hooks
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('09:00');
   const [notas, setNotas] = useState('');
   const [error, setError] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Sincronizar cuando cambia la cita
   useEffect(() => {
@@ -51,6 +53,10 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
         }
       );
       setError(null);
+      onActionComplete?.({
+        type: 'success',
+        message: 'La cita se actualizo correctamente.'
+      });
       onClose();
     } catch (error) {
       console.error('Error al guardar cambios', error);
@@ -60,13 +66,12 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
 
   const handleClose = () => {
     setError(null);
+    setShowDeleteConfirm(false);
     onClose();
   };
 
   const handleDelete = async (id) => {
     const token = localStorage.getItem('AUTH_TOKEN');
-
-    if (!confirm('¿Eliminar esta cita?')) return;
 
     try {
       await clienteAxios.delete(
@@ -78,6 +83,11 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
         }
       );
 
+      setShowDeleteConfirm(false);
+      onActionComplete?.({
+        type: 'success',
+        message: 'La cita se elimino correctamente.'
+      });
       onClose();
     } catch (error) {
       console.error('Error al eliminar cita', error);
@@ -175,7 +185,7 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
           {/* FOOTER */}
           <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2C3E50] flex justify-between items-center">
             <button
-              onClick={() => handleDelete(cita.id)}
+              onClick={() => setShowDeleteConfirm(true)}
               className="text-red-600 dark:text-red-400 flex items-center gap-2 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors"
             >
               <Trash2 className="w-4 h-4" />
@@ -200,6 +210,17 @@ export default function EditarCitaModal({ isOpen, onClose, cita }) {
 
         </div>
       </div>
+
+      <BrandDialog
+        isOpen={showDeleteConfirm}
+        title="VidaZen"
+        message="¿Eliminar esta cita?"
+        confirmText="Aceptar"
+        cancelText="Cancelar"
+        showCancel
+        onConfirm={() => handleDelete(cita.id)}
+        onClose={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }

@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import useCitas from '../../hooks/useCitas';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import weekday from 'dayjs/plugin/weekday';
 import EditarCitaModal from './EditarCitaModal';
+import BrandDialog from '../../components/BrandDialog';
 import 'dayjs/locale/es';
 
 dayjs.extend(isoWeek);
@@ -18,6 +19,12 @@ import {
 } from 'lucide-react';
 
 export default function Citas() {
+  const [feedbackDialog, setFeedbackDialog] = useState({
+    open: false,
+    type: 'info',
+    message: '',
+  });
+
   const {
     currentWeek,
     setCurrentWeek,
@@ -49,7 +56,7 @@ export default function Citas() {
   // Calcular citas próximas y de hoy
   const { citasProximas, citasHoy } = useMemo(() => {
     const hoy = dayjs().format('YYYY-MM-DD');
-    
+
     const proximas = citas.filter(cita => {
       const citaDate = dayjs(cita.fecha).format('YYYY-MM-DD');
       return citaDate >= hoy;
@@ -197,7 +204,22 @@ export default function Citas() {
           setSelectedCita(null);
           obtenerCitasPorSemana(currentWeek.format('YYYY-MM-DD'));
         }}
+        onActionComplete={({ type, message }) => {
+          setFeedbackDialog({
+            open: true,
+            type: type || 'info',
+            message,
+          });
+        }}
         cita={selectedCita}
+      />
+
+      <BrandDialog
+        isOpen={feedbackDialog.open}
+        title="VidaZen"
+        message={feedbackDialog.message}
+        variant={feedbackDialog.type}
+        onClose={() => setFeedbackDialog({ open: false, type: 'info', message: '' })}
       />
 
     </div>

@@ -13,6 +13,7 @@ import {
 import useSWR from 'swr';
 import clienteAxios from '../../config/axios';
 import { useNavigate } from 'react-router-dom';
+import BrandDialog from '../../components/BrandDialog';
 
 export default function Pacientes() {
   const navigate = useNavigate();
@@ -21,6 +22,16 @@ export default function Pacientes() {
   // Estados del Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [asignandoId, setAsignandoId] = useState(null);
+  const [feedbackDialog, setFeedbackDialog] = useState({
+    open: false,
+    type: 'info',
+    message: ''
+  });
+  const [confirmDesasignar, setConfirmDesasignar] = useState({
+    open: false,
+    pacienteId: null,
+    pacienteNombre: ''
+  });
 
   // Estados de paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,7 +67,10 @@ export default function Pacientes() {
   const pacientesSinAsignar = pacientes_sin_asignar?.pacientes_sin_asignar || [];
 
   // Función para asignar paciente
-  const handleAsignarPaciente = async (pacienteId) => {
+  const handleAsignarPaciente = async (paciente) => {
+    const pacienteId = paciente?.id;
+    const pacienteNombre = paciente?.user?.name || 'El paciente';
+
     try {
       setAsignandoId(pacienteId);
       await clienteAxios.put(`/api/pacientes/${pacienteId}`, {}, {
@@ -67,26 +81,31 @@ export default function Pacientes() {
       setCurrentPage(1); // Resetear a página 1
       mutate();
       mutateSinAsignar();
+      setFeedbackDialog({
+        open: true,
+        type: 'success',
+        message: `${pacienteNombre} fue asignado correctamente.`
+      });
 
     } catch (error) {
       console.error("Error al asignar paciente:", error);
+      setFeedbackDialog({
+        open: true,
+        type: 'error',
+        message: 'No se pudo asignar el paciente. Intente nuevamente.'
+      });
     } finally {
       setAsignandoId(null);
     }
   };
 
   // ELIMINAR PACIENTE DEL PSICOLOGO (Desasignar)
-  const handleDesasignarPaciente = async (pacienteId) => {
-
-    console.log("Intentando desasignar paciente con ID:", pacienteId);
-    // Confirmación para evitar clics accidentales
-    const confirmar = window.confirm("¿Estás seguro de que deseas remover a este paciente de tu lista?");
-    if (!confirmar) return;
+  const handleDesasignarPaciente = async ({ pacienteId, pacienteNombre }) => {
 
     try {
       await clienteAxios.put(`/api/pacientes/desasignar-psicologo`, {},
-        { params: { paciente_id: pacienteId },}, 
         {
+          params: { paciente_id: pacienteId },
           headers: { Authorization: `Bearer ${token}` }
         }
       );
@@ -94,10 +113,19 @@ export default function Pacientes() {
       // Refrescar ambas listas
       mutate();
       mutateSinAsignar();
+      setFeedbackDialog({
+        open: true,
+        type: 'success',
+        message: `${pacienteNombre || 'El paciente'} fue removido de tu lista correctamente.`
+      });
 
     } catch (error) {
       console.error("Error al desasignar paciente:", error);
-      alert("Hubo un error al intentar remover al paciente.");
+      setFeedbackDialog({
+        open: true,
+        type: 'error',
+        message: 'Hubo un error al intentar remover al paciente.'
+      });
     }
   };
 
@@ -250,12 +278,16 @@ export default function Pacientes() {
                     </div>
                   </td>
                   <td className="p-5 text-right">
-                    <button 
+                    <button
                       title="Remover paciente"
                       className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDesasignarPaciente(paciente.id);
+                        setConfirmDesasignar({
+                          open: true,
+                          pacienteId: paciente.id,
+                          pacienteNombre: paciente.user?.name || 'este paciente'
+                        });
                       }}
                     >
                       <MoreVertical className="w-5 h-5" />
@@ -338,7 +370,7 @@ export default function Pacientes() {
                       </div>
 
                       <button
-                        onClick={() => handleAsignarPaciente(paciente.id)}
+                        onClick={() => handleAsignarPaciente(paciente)}
                         disabled={asignandoId === paciente.id}
                         className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 ${asignandoId === paciente.id
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800'
@@ -361,6 +393,31 @@ export default function Pacientes() {
           </div>
         </div>
       )}
+
+      <BrandDialog
+        isOpen={confirmDesasignar.open}
+        title="VidaZen"
+        message={`¿Deseas remover a ${confirmDesasignar.pacienteNombre} de tu lista?`}
+        confirmText="Aceptar"
+        cancelText="Cancelar"
+        showCancel
+        onConfirm={() => {
+          handleDesasignarPaciente({
+            pacienteId: confirmDesasignar.pacienteId,
+            pacienteNombre: confirmDesasignar.pacienteNombre
+          });
+          setConfirmDesasignar({ open: false, pacienteId: null, pacienteNombre: '' });
+        }}
+        onClose={() => setConfirmDesasignar({ open: false, pacienteId: null, pacienteNombre: '' })}
+      />
+
+      <BrandDialog
+        isOpen={feedbackDialog.open}
+        title="VidaZen"
+        message={feedbackDialog.message}
+        variant={feedbackDialog.type}
+        onClose={() => setFeedbackDialog({ open: false, type: 'info', message: '' })}
+      />
 
     </main>
   );
