@@ -7,9 +7,10 @@ import {
   Layers,
   RefreshCw,
   CheckCircle2,
+  ChevronDown,
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import clienteAxios from '../../config/axios';
 
 export default function Actividad() {
@@ -39,6 +40,10 @@ export default function Actividad() {
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [filterModulo, setFilterModulo] = useState('all');
   const [filterTipo, setFilterTipo] = useState('all');
+  const [searchNombre, setSearchNombre] = useState('');
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+
+  const categoryDropdownRef = useRef(null);
 
   const availableModules = Array.from(
     new Set(
@@ -56,10 +61,25 @@ export default function Actividad() {
     )
   ).sort((a, b) => a.localeCompare(b));
 
+  const categoryOptions = Array.from(
+    new Set([...tipoOptions, (formData.categoria || '').trim()].filter(Boolean))
+  ).sort((a, b) => a.localeCompare(b));
+
+  const normalizeSearchValue = (value) =>
+    (value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
   const filteredActivities = allActivities.filter((actividad) => {
+    const normalizedSearch = normalizeSearchValue(searchNombre);
+    const normalizedName = normalizeSearchValue(actividad.nombre);
+
     const moduloMatches = filterModulo === 'all' || actividad.modulo === Number(filterModulo);
     const tipoMatches = filterTipo === 'all' || (actividad.tipo || '').toLowerCase() === filterTipo.toLowerCase();
-    return moduloMatches && tipoMatches;
+    const nombreMatches = normalizedSearch === '' || normalizedName.includes(normalizedSearch);
+    return moduloMatches && tipoMatches && nombreMatches;
   });
 
   const fetchActivitiesCatalog = () => {
@@ -68,7 +88,7 @@ export default function Actividad() {
 
     clienteAxios
       .get('/api/actividades', {
-        params: { role: 'psicologo' },
+        params: { role: 'psicologo', paciente_id: pacienteId },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -128,6 +148,17 @@ export default function Actividad() {
     fetchActivitiesCatalog();
   }, []);
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (!categoryDropdownRef.current?.contains(event.target)) {
+        setIsCategoryOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
   const handleSave = () => {
     if (isEditing) {
       //   PUT
@@ -153,7 +184,15 @@ export default function Actividad() {
       //   POST
       try {
         const token = localStorage.getItem('AUTH_TOKEN');
-        clienteAxios.post(`/api/actividades`, { ...formData, role: 'psicologo' }, {
+        const createPayload = {
+          nombre: formData.nombre,
+          descripcion: formData.descripcion,
+          categoria: formData.categoria,
+          duracion: formData.duracion,
+          role: 'psicologo',
+        };
+
+        clienteAxios.post(`/api/actividades`, createPayload, {
           params: { role: 'psicologo', paciente_id: pacienteId },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -335,15 +374,56 @@ export default function Actividad() {
                 <label htmlFor="category" className="block text-sm font-semibold text-[#2C3E50] dark:text-white mb-2">
                   Categoría
                 </label>
-                <div className="relative">
-                  <input
-                    id="categoria"
-                    value={formData.categoria}
-                    onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
-                    type="text"
-                    placeholder="Ej. Respiración, Mindfulness, Ejercicio Físico..."
-                    className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-[#FBFCFC] dark:bg-black/20 focus:border-[#85C1E9] focus:ring-1 focus:ring-[#85C1E9] text-base p-3.5 outline-none transition-colors dark:text-white dark:placeholder-gray-400"
-                  />
+                <div className="relative" ref={categoryDropdownRef}>
+                  <button
+                    id="category"
+                    type="button"
+                    onClick={() => setIsCategoryOpen((prev) => !prev)}
+                    className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-[#FBFCFC] dark:bg-black/20 focus:border-[#85C1E9] focus:ring-1 focus:ring-[#85C1E9] text-base p-3.5 outline-none transition-colors dark:text-white text-left flex items-center justify-between"
+                    aria-expanded={isCategoryOpen}
+                    aria-haspopup="listbox"
+                  >
+                    <span className={formData.categoria ? 'text-[#2C3E50] dark:text-white' : 'text-[#5D6D7E] dark:text-[#BDC3C7]'}>
+                      {formData.categoria || 'Seleccione una categoría...'}
+                    </span>
+                    <ChevronDown className={`w-5 h-5 text-[#5D6D7E] dark:text-[#BDC3C7] transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isCategoryOpen && (
+                    <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#1f2c3a] shadow-lg overflow-hidden">
+                      <button
+                        type="button"
+                        className="w-full text-left px-3.5 py-2.5 text-[#5D6D7E] dark:text-[#BDC3C7] hover:bg-gray-100 dark:hover:bg-[#2a3a4c]"
+                        onClick={() => {
+                          setFormData({ ...formData, categoria: '' });
+                          setIsCategoryOpen(false);
+                        }}
+                      >
+                        Seleccione una categoría...
+                      </button>
+
+                      {categoryOptions.map((category) => {
+                        const isSelected = formData.categoria === category;
+
+                        return (
+                          <button
+                            key={category}
+                            type="button"
+                            className={`w-full text-left px-3.5 py-2.5 transition-colors ${isSelected
+                              ? 'bg-[#85C1E9]/20 text-[#2C3E50] dark:text-white'
+                              : 'text-[#2C3E50] dark:text-white hover:bg-gray-100 dark:hover:bg-[#2a3a4c]'
+                              }`}
+                            onClick={() => {
+                              setFormData({ ...formData, categoria: category });
+                              setIsCategoryOpen(false);
+                            }}
+                          >
+                            {category}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -391,7 +471,7 @@ export default function Actividad() {
             Aquí puedes revisar actividades disponibles y filtrar por módulo o tipo para cambiar progresivamente el módulo de cada actividad.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
               <label className="block text-sm font-semibold text-[#2C3E50] dark:text-white mb-2" htmlFor="filtro-modulo">
                 Filtrar por módulo
@@ -409,6 +489,20 @@ export default function Actividad() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-[#2C3E50] dark:text-white mb-2" htmlFor="filtro-nombre">
+                Buscar por nombre
+              </label>
+              <input
+                id="filtro-nombre"
+                type="text"
+                value={searchNombre}
+                onChange={(e) => setSearchNombre(e.target.value)}
+                placeholder="Ej. meditacion, respiración..."
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#1f2c3a] px-3 py-2.5 text-[#2C3E50] dark:text-white outline-none focus:border-[#85C1E9]"
+              />
             </div>
 
             <div>
