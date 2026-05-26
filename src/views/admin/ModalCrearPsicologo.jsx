@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import clienteAxios from '../../config/axios';
 
-export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, psicologoEditar }) {
+export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, psicologoEditar, onSuccess }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -89,8 +89,14 @@ export default function ModalAgregarPsicologo({ isOpen, onClose, refreshData, ps
         await clienteAxios.post('/api/psicologos', dataToSend, config);
       }
 
-      refreshData();
+      await refreshData();
       onClose();
+      onSuccess?.({
+        type: 'success',
+        message: isEditing
+          ? `${formData.name || 'El psicologo'} fue actualizado correctamente.`
+          : `${formData.name || 'El psicologo'} fue agregado correctamente.`
+      });
     } catch (err) {
       if (err.response?.data?.message) {
         setError(err.response?.data?.errors ?

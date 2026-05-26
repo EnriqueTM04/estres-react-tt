@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import clienteAxios from '../../config/axios';
 import ModalAgregarPsicologo from './ModalCrearPsicologo';
+import BrandDialog from '../../components/BrandDialog';
 
 export default function Inicio() {
   const [psicologos, setPsicologos] = useState([]);
@@ -9,6 +10,15 @@ export default function Inicio() {
   const [totalPsicologos, setTotalPsicologos] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [psicologoEditar, setPsicologoEditar] = useState(null);
+  const [feedbackDialog, setFeedbackDialog] = useState({
+    open: false,
+    type: 'info',
+    message: ''
+  });
+  const [confirmEliminarDialog, setConfirmEliminarDialog] = useState({
+    open: false,
+    psicologo: null
+  });
 
   const consultarPsicologos = async () => {
     try {
@@ -45,20 +55,31 @@ export default function Inicio() {
     setIsModalOpen(true);
   };
 
-  // Función para eliminar un psicólogo
-  const handleEliminar = async (psicologo) => {
-    if (window.confirm(`¿Estás seguro de eliminar a ${psicologo.user?.name || 'este psicólogo'}?`)) {
-      try {
-        const token = localStorage.getItem('AUTH_TOKEN');
-        await clienteAxios.delete(`/api/psicologos/${psicologo.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        consultarPsicologos();
-      } catch (error) {
-        console.error('Error al eliminar psicólogo', error);
-      }
+  const handleEliminar = async () => {
+    const psicologo = confirmEliminarDialog.psicologo;
+    if (!psicologo) return;
 
-      consultarPsicologos();
+    try {
+      const token = localStorage.getItem('AUTH_TOKEN');
+      await clienteAxios.delete(`/api/psicologos/${psicologo.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      await consultarPsicologos();
+      setConfirmEliminarDialog({ open: false, psicologo: null });
+      setFeedbackDialog({
+        open: true,
+        type: 'success',
+        message: `${psicologo.user?.name || 'El psicologo'} fue eliminado correctamente.`
+      });
+    } catch (error) {
+      console.error('Error al eliminar psicólogo', error);
+      setConfirmEliminarDialog({ open: false, psicologo: null });
+      setFeedbackDialog({
+        open: true,
+        type: 'error',
+        message: 'No se pudo eliminar el psicologo. Intente nuevamente.'
+      });
     }
   };
 
@@ -142,8 +163,8 @@ export default function Inicio() {
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center justify-center gap-2 rounded-xl h-8 px-4 text-sm font-medium w-full max-w-[140px] border ${psicologo.user.verified
-                                ? 'bg-[#e7f3f3] border-transparent text-[#0e1b1b]'
-                                : 'bg-transparent border-[#d0e7e7] text-gray-500'
+                              ? 'bg-[#e7f3f3] border-transparent text-[#0e1b1b]'
+                              : 'bg-transparent border-[#d0e7e7] text-gray-500'
                               }`}>
                               {psicologo.user.email_verified_at ? (
                                 <>
@@ -166,7 +187,7 @@ export default function Inicio() {
                                 <Edit2 size={18} />
                               </button>
                               <button
-                                onClick={() => handleEliminar(psicologo)}
+                                onClick={() => setConfirmEliminarDialog({ open: true, psicologo })}
                                 className="p-2 text-[#4e9797] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Eliminar"
                               >
@@ -191,6 +212,32 @@ export default function Inicio() {
         onClose={() => setIsModalOpen(false)}
         refreshData={consultarPsicologos}
         psicologoEditar={psicologoEditar}
+        onSuccess={({ type, message }) => {
+          setFeedbackDialog({
+            open: true,
+            type: type || 'success',
+            message,
+          });
+        }}
+      />
+
+      <BrandDialog
+        isOpen={confirmEliminarDialog.open}
+        title="VidaZen"
+        message={`¿Estás seguro de eliminar a ${confirmEliminarDialog.psicologo?.user?.name || 'este psicologo'}?`}
+        confirmText="Aceptar"
+        cancelText="Cancelar"
+        showCancel
+        onConfirm={handleEliminar}
+        onClose={() => setConfirmEliminarDialog({ open: false, psicologo: null })}
+      />
+
+      <BrandDialog
+        isOpen={feedbackDialog.open}
+        title="VidaZen"
+        message={feedbackDialog.message}
+        variant={feedbackDialog.type}
+        onClose={() => setFeedbackDialog({ open: false, type: 'info', message: '' })}
       />
     </div>
   );
