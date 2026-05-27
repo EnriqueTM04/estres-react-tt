@@ -4,11 +4,11 @@ import Alerta from '../components/Alerta'
 import { useAuth } from '../hooks/useAuth'
 import logo from "../assets/Isotipo-Logo Final-04.svg";
 import ModalPrivacidad from './ModalPrivacidad'
-import { 
-  Flower, 
-  Activity, 
-  AtSign, 
-  Lock, 
+import {
+  Flower,
+  Activity,
+  AtSign,
+  Lock,
   ArrowRight,
   Loader,
   X,
@@ -74,13 +74,13 @@ export default function Login() {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
         <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-200">
-          <button 
+          <button
             onClick={() => setModal({ abierto: false, contenido: '' })}
             className="absolute top-6 right-6 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
           >
             <X className="w-5 h-5 text-gray-400" />
           </button>
-          
+
           <div className="p-8 md:p-10">
             <h2 className="text-2xl font-['Montserrat'] font-bold text-[#2C3E50] dark:text-white mb-6 pr-8">
               {info.titulo}
@@ -88,7 +88,7 @@ export default function Login() {
             <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar font-sans">
               {info.cuerpo}
             </div>
-            <button 
+            <button
               onClick={() => setModal({ abierto: false, contenido: '' })}
               className="mt-8 w-full py-3 bg-[#85C1E9] text-white font-bold rounded-xl hover:bg-[#2C3E50] transition-colors"
             >
@@ -102,13 +102,13 @@ export default function Login() {
 
   return (
     <div className={`mt-5 flex items-center justify-center transition-colors duration-300 font-sans 'bg-gradient-to-br from-[#FBFCFC] to-[#F0F4F8]'}`}>
-      
+
       {/* Modal Render */}
       <ModalPortal />
 
-      <ModalPrivacidad 
-        abierto={mostrarPrivacidad} 
-        onClose={() => setMostrarPrivacidad(false)} 
+      <ModalPrivacidad
+        abierto={mostrarPrivacidad}
+        onClose={() => setMostrarPrivacidad(false)}
       />
 
       <style>
@@ -128,7 +128,7 @@ export default function Login() {
       </div>
 
       <div className="max-w-4xl w-full grid md:grid-cols-2 bg-white dark:bg-gray-900 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300">
-        
+
         {/* PANEL IZQUIERDO (Branding) */}
         <div className="hidden md:flex flex-col justify-between p-12 bg-gradient-to-br from-[#A2D9CE] via-[#85C1E9] to-[#B6E3F2] relative overflow-hidden">
           <div className="absolute -top-20 -left-20 w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
@@ -140,7 +140,7 @@ export default function Login() {
               <h1 className="font-['Montserrat'] font-bold text-3xl text-[#2C3E50] tracking-tight">Vidazen</h1>
             </div>
             <h2 className="font-['Montserrat'] text-4xl font-light text-[#2C3E50] leading-tight mb-4">
-              Cuidando <br/><span className="font-semibold">bienestar mental</span>
+              Cuidando <br /><span className="font-semibold">bienestar mental</span>
             </h2>
             <p className="text-[#2C3E50]/70 font-medium max-w-xs">
               Plataforma profesional para la gestión del progreso terapéutico y niveles de estrés.
@@ -180,12 +180,12 @@ export default function Login() {
               </label>
               <div className="relative">
                 <AtSign className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input 
-                  id="email" 
-                  name="email" 
-                  type="email" 
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
                   ref={emailRef}
-                  required 
+                  required
                   placeholder="ejemplo@vidazen.com"
                   className="w-full pl-12 pr-4 py-3.5 bg-[#FBFCFC] dark:bg-gray-800 border-transparent focus:border-[#85C1E9] focus:ring-4 focus:ring-[#85C1E9]/10 rounded-xl transition-all outline-none dark:text-white placeholder-gray-400"
                 />
@@ -203,16 +203,16 @@ export default function Login() {
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input 
-                  id="password" 
-                  name="password" 
-                  type="password" 
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
                   ref={passwordRef}
-                  required 
+                  required
                   placeholder="••••••••"
                   className="w-full pl-12 pr-4 py-3.5 bg-[#FBFCFC] dark:bg-gray-800 border-transparent focus:border-[#85C1E9] focus:ring-4 focus:ring-[#85C1E9]/10 rounded-xl transition-all outline-none dark:text-white placeholder-gray-400"
                 />
-                <Eye className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" 
+                <Eye className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"
                   onClick={() => {
                     const input = passwordRef.current;
                     if (input.type === 'password') {
@@ -225,9 +225,9 @@ export default function Login() {
               </div>
             </div>
 
-            <button 
+            <button
               type="submit"
-              disabled={cargando} 
+              disabled={cargando}
               className={`cursor-pointer w-full py-4 bg-[#2C3E50] text-white font-['Montserrat'] font-bold rounded-xl hover:bg-[#2C3E50]/90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-[#2C3E50]/20 flex items-center justify-center gap-2 ${cargando ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               {cargando ? (
@@ -244,23 +244,14 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              ¿No tienes una cuenta institucional?{' '}
-              <a href="#" className="text-[#2C3E50] dark:text-[#85C1E9] font-bold hover:underline">
-                Contactar a soporte
-              </a>
-            </p>
-          </div>
-
           <div className="mt-8 flex justify-center gap-6 text-[10px] uppercase tracking-widest text-gray-400 font-bold">
-            <button 
+            <button
               onClick={() => setModal({ abierto: true, contenido: 'terminos' })}
               className="hover:text-[#2C3E50] transition-colors cursor-pointer outline-none uppercase"
             >
               Términos
             </button>
-            <button 
+            <button
               type="button"
               onClick={() => setMostrarPrivacidad(true)}
               className="hover:text-[#2C3E50] transition-colors cursor-pointer outline-none uppercase tracking-widest"

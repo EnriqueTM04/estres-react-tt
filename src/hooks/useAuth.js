@@ -1,5 +1,5 @@
 import clienteAxios from "../config/axios";
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
 
@@ -53,6 +53,29 @@ export const useAuth = ({ middleware, url }) => {
 
     }
 
+    const acceptConfidentialityAgreement = async (payload) => {
+        if (!user?.id) {
+            throw new Error('No fue posible identificar al usuario para guardar la aceptación.');
+        }
+
+        if (!payload?.accepted) {
+            throw new Error('Debes aceptar el acuerdo para continuar.');
+        }
+
+        const version = payload?.version || 'v1.0';
+        const key = `VIDAZEN_CONF_AGREEMENT_${user.id}_${user.role}`;
+        localStorage.setItem(
+            key,
+            JSON.stringify({
+                accepted: true,
+                acceptedAt: new Date().toISOString(),
+                version,
+            })
+        );
+
+        return { message: 'Acuerdo aceptado correctamente.' };
+    }
+
     const logout = async () => {
         try {
             await clienteAxios.post('/api/logout', null, {
@@ -66,9 +89,6 @@ export const useAuth = ({ middleware, url }) => {
             throw Error(error?.response?.data?.errors)
         }
     }
-
-    console.log(middleware)
-    console.log(error)
 
     useEffect(() => {
         if (middleware === 'auth' && error) {
@@ -84,6 +104,12 @@ export const useAuth = ({ middleware, url }) => {
     }, [user, error, middleware, navigate]);
 
     return {
-        login, registro, logout, user, error
+        login,
+        registro,
+        logout,
+        acceptConfidentialityAgreement,
+        refreshUser: mutate,
+        user,
+        error
     }
 }
