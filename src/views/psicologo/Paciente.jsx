@@ -104,6 +104,34 @@ export default function Paciente() {
     };
   }, [apiData]);
 
+  const resumenModulos = useMemo(() => {
+    if (apiData?.stats?.modulos_completados?.length) {
+      return apiData.stats.modulos_completados;
+    }
+
+    if (!apiData?.modulos?.length) {
+      return [];
+    }
+
+    const agrupado = apiData.modulos.reduce((acc, actividad) => {
+      const modulo = Number(actividad.modulo) || 0;
+      if (!acc[modulo]) {
+        acc[modulo] = { suma: 0, total: 0 };
+      }
+
+      acc[modulo].suma += Number(actividad.progreso) || 0;
+      acc[modulo].total += 1;
+      return acc;
+    }, {});
+
+    return Object.entries(agrupado)
+      .map(([modulo, valores]) => ({
+        modulo: Number(modulo),
+        porcentaje: valores.total > 0 ? Math.round(valores.suma / valores.total) : 0,
+      }))
+      .sort((a, b) => a.modulo - b.modulo);
+  }, [apiData]);
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -242,15 +270,23 @@ export default function Paciente() {
               </div>
             </div>
 
-            {/* Stat 3: Tareas Completadas */}
+            {/* Stat 3: Módulos Completados */}
             <div className="bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Tareas Completadas</p>
-                <p className="text-2xl font-bold text-[#2C3E50] dark:text-white mt-1">
-                  {stats.tareas_completadas_porcentaje}%
-                </p>
-                <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                  Total: {stats.total_tareas} asignadas
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Módulos Completados</p>
+                {resumenModulos.length > 0 ? (
+                  <div className="mt-2 space-y-1 max-h-20 overflow-y-auto pr-1">
+                    {resumenModulos.map((item) => (
+                      <p key={item.modulo} className="text-sm font-semibold text-[#2C3E50] dark:text-white truncate">
+                        Módulo {item.modulo}: {item.porcentaje}%
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">Sin módulos con avance.</p>
+                )}
+                <span className="text-xs text-gray-400 dark:text-gray-500 mt-2 block">
+                  Total: {stats.total_tareas} actividades asignadas
                 </span>
               </div>
               <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-500">
@@ -280,7 +316,7 @@ export default function Paciente() {
 
           {/* --- MODULES SECTION (Dinámico) --- */}
           <div className="col-span-1 bg-white dark:bg-[#2C3E50] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white mb-6">Módulos Asignados</h3>
+            <h3 className="text-lg font-bold text-[#2C3E50] dark:text-white mb-6">Actividades Asignadas</h3>
             <div className="space-y-6 max-h-64 overflow-y-auto pr-2">
 
               {modulos && modulos.length > 0 ? (
@@ -309,7 +345,7 @@ export default function Paciente() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">No hay módulos asignados actualmente.</p>
+                <p className="text-sm text-gray-500">No hay actividades asignadas actualmente.</p>
               )}
 
               <div className="pt-4 mt-2 border-t border-gray-100 dark:border-gray-700">
@@ -317,7 +353,7 @@ export default function Paciente() {
                   onClick={() => navigate(`/psicologo/pacientes/${id}/nueva-actividad`)}
                   className="w-full py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:border-[#85C1E9] hover:text-[#85C1E9] transition-colors flex items-center justify-center gap-2"
                 >
-                  <Plus className="w-4 h-4" /> Asignar Nuevo Módulo
+                  <Plus className="w-4 h-4" /> Asignar/Mover Actividad
                 </button>
               </div>
             </div>
