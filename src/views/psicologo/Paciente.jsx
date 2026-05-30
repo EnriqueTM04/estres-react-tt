@@ -288,6 +288,9 @@ export default function Paciente() {
                 <span className="text-xs text-gray-400 dark:text-gray-500 mt-2 block">
                   Total: {stats.total_tareas} actividades asignadas
                 </span>
+                <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 block">
+                  Módulo actual: {stats.modulo_actual ? `Módulo ${stats.modulo_actual}` : 'Sin asignar'}
+                </span>
               </div>
               <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-500">
                 <CheckCircle2 className="w-6 h-6" />
